@@ -22,7 +22,7 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','266_Skel', '266_Bulge'],['31_Skel_0', '31_Bulge_0','31_Skel_50', '31_Bulge_50']]
-modelType = ['FF_IN', 'R_IN']
+modelType = ['FF_IN', 'R_IN', 'FF_SN', 'R_SN']
 
 
 
@@ -30,7 +30,7 @@ frames= 300
 labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
 #labels = list(chain(*labels))
 
-folK = 2
+folK = 10
 
 #For single class SVM
 clf = svm.OneClassSVM(gamma = 'scale', nu=0.1)
@@ -65,17 +65,32 @@ for mm in range(0, len(modelType)):
                 
                 #Check if first 2 characters are same 
                 #to determine whether skel is the same
-                if stim[ee][sTR][0:2] == stim[ee][sTE][0:2]:
-                    skel = 'Same'
-                else:
-                    skel = 'Diff'
                 
-                #check if surface forms are the same
-                if stim[ee][sTR][0:2][-4:-2] == stim[ee][sTE][-4:-2]:
-                    SF = 'Same'
-                else:
-                    SF = 'Diff'
+                if exp[ee] == 'Exp1':
                         
+                    if stim[ee][sTR][0:2] == stim[ee][sTE][0:2]:
+                        skel = 'Same'
+                    else:
+                        skel = 'Diff'
+                    
+                    #check if surface forms are the same
+                    if stim[ee][sTR][-4:] == stim[ee][sTE][-4:]:
+                        SF = 'Same'
+                    else:
+                        SF = 'Diff'
+                        
+                elif exp[ee] == 'Exp2':
+                    if stim[ee][sTR][-2:] == stim[ee][sTE][-2:]:
+                        skel = 'Same'
+                    else:
+                        skel = 'Diff'
+                    
+                    #check if surface forms are the same
+                    if stim[ee][sTR][0:5] == stim[ee][sTE][0:5]:
+                        SF = 'Same'
+                    else:
+                        SF = 'Diff'
+                            
                 CNN_Acc[n,2] = skel
                 CNN_Acc[n,3] = SF
                 CNN_Acc[n,4] = trainAcc/folK
