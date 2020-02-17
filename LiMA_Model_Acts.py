@@ -27,7 +27,7 @@ exp = ['Exp1', 'Exp2']
 
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','266_Skel', '266_Bulge'],['31_Skel_0', '31_Bulge_0','31_Skel_50', '31_Bulge_50']]
 modelType = ['FF_IN', 'R_IN', 'FF_SN', 'R_SN']
-modelType = ['FF_SN', 'R_SN']
+
 
 frames = 300
 
