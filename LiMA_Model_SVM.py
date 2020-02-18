@@ -34,12 +34,14 @@ folK = 10
 
 #For single class SVM
 clf = svm.OneClassSVM(gamma = 'scale', nu=0.1)
-for mm in range(0, len(modelType)):
-    for ee in range(0,len(exp)):
+
+for ee in range(0,len(exp)):
+    n = 0
+    CNN_Acc = np.empty((len(stim[ee]) * (len(stim[ee]))*4,8), dtype = object)
+    
+    for mm in range(0, len(modelType)):      
         
-        CNN_Acc = np.empty((len(stim[ee]) * (len(stim[ee])),6), dtype = object)
         
-        n = 0
         allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
         for sTR in range(0,len(stim[ee])):
             for sTE in range(0,len(stim[ee])):
@@ -59,9 +61,10 @@ for mm in range(0, len(modelType)):
                     tempAcc_test = clf.predict(X_test)
                     testAcc = testAcc + ((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2)
                     
-                    
-                CNN_Acc[n,0] = 'Figure_' + stim[ee][sTR]
-                CNN_Acc[n,1] = 'Figure_' + stim[ee][sTE]
+                CNN_Acc[n,0] = exp[ee]
+                CNN_Acc[n,1] = modelType[mm]
+                CNN_Acc[n,2] = 'Figure_' + stim[ee][sTR]
+                CNN_Acc[n,3] = 'Figure_' + stim[ee][sTE]
                 
                 #Check if first 2 characters are same 
                 #to determine whether skel is the same
@@ -91,14 +94,16 @@ for mm in range(0, len(modelType)):
                     else:
                         SF = 'Diff'
                             
-                CNN_Acc[n,2] = skel
-                CNN_Acc[n,3] = SF
-                CNN_Acc[n,4] = trainAcc/folK
-                CNN_Acc[n,5] = testAcc/folK
+                CNN_Acc[n,4] = skel
+                CNN_Acc[n,5] = SF
+                CNN_Acc[n,6] = trainAcc/folK
+                CNN_Acc[n,7] = testAcc/folK
                 
                 n = n +1
                 
-        np.savetxt('Results/LiMA_' + exp[ee] + '_' + modelType[mm] + '_OneClassSVM.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        print(exp[ee], modelType[mm])
+                
+    np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OneClassSVM.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
 #
 #
