@@ -33,7 +33,9 @@ labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
 folK = 10
 
 #For single class SVM
-clf = svm.OneClassSVM(gamma = 'scale', nu=0.1)
+#Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
+#Gamma parameter determines smoothing of the edges of data (i.e., the )
+clf = svm.OneClassSVM(gamma = 'scale', nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0

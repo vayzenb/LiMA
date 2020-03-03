@@ -79,6 +79,8 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
         
+        model.eval() #Set model into evaluation mode
+        
     #Loop through the experimental conditions
     for ee in range(0,len(exp)):
         allActs = {}
