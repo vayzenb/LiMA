@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+Runs single-class SVM on LiMA frames
+This version trains on both surface forms and tests on categorization for other skeletons
+
 Created on Tue Feb 18 13:59:43 2020
 
 @author: VAYZENB
@@ -38,7 +41,7 @@ frames= 300
 labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
 #labels = list(chain(*labels))
 
-folK = 2
+folK = 10
 
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
@@ -47,13 +50,13 @@ clf = svm.OneClassSVM(gamma = 'scale', nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty((len(stim[ee]) * (len(stim[ee]))*4,8), dtype = object)
+    CNN_Acc = np.empty((len(skelNum[ee]) * len(stim[ee])*len(modelType),7), dtype = object)
     
     for mm in range(0, len(modelType)):      
         
         allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
         
-        for sTR in range(0,len(skelNum[ee])): #The training will now be grouped by skeleton typee
+        for sTR in range(0,len(skelNum[ee])): #The training will now be grouped by skeleton type
         
             for sTE in range(0,len(stim[ee])):
                 trainAcc = 0
@@ -62,10 +65,13 @@ for ee in range(0,len(exp)):
                     rN = np.random.choice(frames, frames, replace=False) 
                     
                     if exp[ee] == 'Exp1':
+                        trainFig = 'Figure_' + skelNum[ee][sTR]
+                        
                         X_train =np.vstack([allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:],\
                                             allActs['Figure_' + skelNum[ee][sTR] + '_Bulge'][rN[0:int(frames/2)],:]])
     
                     elif exp[ee] == 'Exp2':
+                        trainFig = 'Figure_31_' + skelNum[ee][sTR]
                         X_train =np.vstack([allActs['Figure_31_Skel_' + skelNum[ee][sTR]][rN[0:int(frames/2)],:],\
                                             allActs['Figure_31_Bulge_' + skelNum[ee][sTR]][rN[0:int(frames/2)],:]])
                     
@@ -80,7 +86,7 @@ for ee in range(0,len(exp)):
                     
                 CNN_Acc[n,0] = exp[ee]
                 CNN_Acc[n,1] = modelType[mm]
-                CNN_Acc[n,2] = 'Figure_' + stim[ee][sTR]
+                CNN_Acc[n,2] = trainFig
                 CNN_Acc[n,3] = 'Figure_' + stim[ee][sTE]
                 
                 #Check if first 2 characters are same 
@@ -88,33 +94,20 @@ for ee in range(0,len(exp)):
                 
                 if exp[ee] == 'Exp1':
                         
-                    if stim[ee][sTR][0:2] == stim[ee][sTE][0:2]:
+                    if skelNum[ee][sTR][0:2] == stim[ee][sTE][0:2]:
                         skel = 'Same'
                     else:
                         skel = 'Diff'
-                    
-                    #check if surface forms are the same
-                    if stim[ee][sTR][-4:] == stim[ee][sTE][-4:]:
-                        SF = 'Same'
-                    else:
-                        SF = 'Diff'
-                        
+                                           
                 elif exp[ee] == 'Exp2':
-                    if stim[ee][sTR][-2:] == stim[ee][sTE][-2:]:
+                    if trainFig[-2:] == stim[ee][sTE][-2:]:
                         skel = 'Same'
                     else:
                         skel = 'Diff'
                     
-                    #check if surface forms are the same
-                    if stim[ee][sTR][0:5] == stim[ee][sTE][0:5]:
-                        SF = 'Same'
-                    else:
-                        SF = 'Diff'
-                            
                 CNN_Acc[n,4] = skel
-                CNN_Acc[n,5] = SF
-                CNN_Acc[n,6] = trainAcc/folK
-                CNN_Acc[n,7] = testAcc/folK
+                CNN_Acc[n,5] = trainAcc/folK
+                CNN_Acc[n,6] = testAcc/folK
                 
                 n = n +1
                 

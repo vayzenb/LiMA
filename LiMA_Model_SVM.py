@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Runs single-class SVM on LiMA frames
+Tests categorization for: left out frames, same MA, same SF, all diff
 Created on Sun Feb 16 15:16:04 2020
 
 @author: VAYZENB

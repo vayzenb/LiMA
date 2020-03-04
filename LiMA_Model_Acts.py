@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Extracts feature activations for frames of LiMA objects (exp1 + exp2)
+Does for feedforward (AlexNet) and Recurrent (ResNet) models trained on imageNet (IN) or stylized IN (SN)
 Created on Sun Feb 16 14:42:11 2020
 
 @author: VAYZENB
