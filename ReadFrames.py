@@ -7,11 +7,12 @@ Created on Mon Apr 22 11:04:18 2019
 
 import os
 import cv2
+from PIL import Image
 
 
+#os.chdir("C:/Users/vayzenb\Desktop\GitHub Repos\LiMA")
+vids = os.listdir("Videos/")
 
-os.chdir("R:/LourencoLab/Adult Studies/Shapes (All Experiments)/Scripts/LiMA")
-vids = os.listdir("R:/LourencoLab/Adult Studies/Shapes (All Experiments)/Scripts/LiMA/Videos")
 
 for ii in range(0,len(vids)):
     vidcap = cv2.VideoCapture('Videos/' + vids[ii])
@@ -20,7 +21,15 @@ for ii in range(0,len(vids)):
     count = 1
     success = True
     while success:
-      cv2.imwrite("frames/" + vidFile + "_" + str(count) + ".jpg", image)     # save frame as JPEG file
+      cv2.imwrite("Frames/" + vidFile + "_" + str(count) + ".jpg", image)     # save frame as JPEG file
       success,image = vidcap.read()
-      print 'Read a new frame: ', success
+      print('Read a new frame: ', success)
       count += 1
+      
+frames = os.listdir("Frames/")
+
+for ii in range(0,len(frames)):
+    IM = Image.open("Frames/" + frames[ii]).convert("RGB")
+    IM = IM.crop((370, 100, 1070, 800)) 
+    IM.save("Frames/" + frames[ii])
+    
