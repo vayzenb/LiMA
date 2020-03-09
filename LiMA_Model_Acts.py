@@ -27,8 +27,8 @@ import deepdish as dd
 
 exp = ['Exp1', 'Exp2']
 
-skel = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'],['31_0_Skel', '31_0_Bulge','31_0_Skel', '31_50_Bulge']]
-SF = ['Skel', 'Balloon', 'Bulge','Shrink',' Wave']
+skel = [['23','31', '26'],['31_0', '31_50']]
+SF = ['Skel', 'Balloon', 'Bulge','Shrink','Wave']
 modelType = ['FF_SN', 'R_SN']
 
 
@@ -88,15 +88,16 @@ for mm in range(0, len(modelType)):
     for ee in range(0,len(exp)):
         allActs = {}
         
-        for ss in range(0,len(stim[ee])):
-            allActs['Figure_' + stim[ee][ss]] = np.zeros((frames, actNum))
-            for ff in range(0, frames):
-                IM = image_loader('Frames/Figure_' + stim[ee][ss] + '_' + str(ff+1) +'.jpg')
-                vec = model(IM).detach().numpy() #Extract image vector
-                allActs['Figure_' + stim[ee][ss]][ff] = list(chain.from_iterable(vec))
-                
-            print(modelType[mm], exp[ee], stim[ee][ss])
-                
-        dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
+        for ss in range(0,len(skel[ee])):
+            for sf in SF:
+                allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
+                for ff in range(0, frames):
+                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
+                    vec = model(IM).detach().numpy() #Extract image vector
+                    allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
+                    
+                print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
+                    
+                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
         
     
