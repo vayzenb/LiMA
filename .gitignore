@@ -1,5 +1,5 @@
 #Ignore video files
-Videos/
+#Videos/
 
 #Ignore weights file
 ShapeNet_ResNet50_Weights.pth.tar
