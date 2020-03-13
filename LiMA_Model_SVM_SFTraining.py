@@ -31,17 +31,24 @@ import deepdish as dd
    
 exp = ['Exp1', 'Exp2']
 
-skelNum = [['23', '31', '266'] ,['0', '50']]
-stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','266_Skel', '266_Bulge'],['31_Skel_0', '31_Bulge_0','31_Skel_50', '31_Bulge_50']]
-modelType = ['FF_IN', 'R_IN', 'FF_SN', 'R_SN']
+skel= [['23', '31', '266'] ,['0', '50']]
+SFtrain = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'] #Train SFs to test on Bulge
+SFtest = ['Skel', 'Bulge'] #Train SFs to test on skel
+
+modelType = ['FF_SN', 'R_SN']
 
 
 
 frames= 300
-labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
+trainFrames = 150
+
+#Train labels
+#not sure if needed
+labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist(), \
+          np.repeat(3, frames).tolist(), np.repeat(4, frames).tolist()]
 #labels = list(chain(*labels))
 
-folK = 10
+folK = 2
 
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
@@ -56,19 +63,22 @@ for ee in range(0,len(exp)):
         
         allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
         
-        for sTR in range(0,len(skelNum[ee])): #The training will now be grouped by skeleton type
-        
-            for sTE in range(0,len(stim[ee])):
+        for sTR in range(0,len(skel[ee])): #The training will now be grouped by skeleton type          
+            
+            for sTE in range(0,len(SFtest)):
+                
                 trainAcc = 0
                 testAcc = 0
                 for fl in range(0,folK):
                     rN = np.random.choice(frames, frames, replace=False) 
                     
                     if exp[ee] == 'Exp1':
-                        trainFig = 'Figure_' + skelNum[ee][sTR]
+                        trainFig = 'Figure_' + skel[ee][sTR]
                         
                         X_train =np.vstack([allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:],\
-                                            allActs['Figure_' + skelNum[ee][sTR] + '_Bulge'][rN[0:int(frames/2)],:]])
+                                            allActs['Figure_' + skelNum[ee][sTR] + '_Bulge'][rN[0:int(frames/2)],:], \
+                                            allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:],\
+                                            allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:]])
     
                     elif exp[ee] == 'Exp2':
                         trainFig = 'Figure_31_' + skelNum[ee][sTR]
