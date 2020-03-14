@@ -31,7 +31,7 @@ import deepdish as dd
    
 exp = ['Exp1', 'Exp2']
 
-skel= [['23', '31', '266'] ,['31_0', '31_50']]
+skel= [['23', '31', '26'] ,['31_0', '31_50']]
 SFtrain = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'] #Train SFs to test on Bulge
 SFtest = ['Skel', 'Bulge'] #Train SFs to test on skel
 
@@ -53,7 +53,7 @@ folK = 2
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
 #Gamma parameter determines smoothing of the edges of data (i.e., the )
-clf = svm.OneClassSVM(gamma = 'scale', nu=.01)
+clf = svm.OneClassSVM(nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0
@@ -87,11 +87,13 @@ for ee in range(0,len(exp)):
                     
                     clf.fit(X_train)
                     tempAcc_train = clf.predict(X_train)
+                    print(tempAcc_train)
                     trainAcc = trainAcc + ((frames/2) - tempAcc_train[tempAcc_train == -1].size)/(frames/2)
                 
                     #Test on object, but left out surface form
                     X_test = allActs[trainFig + '_' + SFtest[sTE]][rN[int(frames/2):frames],:]
                     tempAcc_test = clf.predict(X_test)
+                    print(tempAcc_test)
                     testAcc = testAcc + ((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2)
                     
                 CNN_Acc[n,0] = exp[ee] #Exp
@@ -102,9 +104,10 @@ for ee in range(0,len(exp)):
                 CNN_Acc[n,4] = trainAcc/folK
                 CNN_Acc[n,5] = testAcc/folK
                 
+                print(exp[ee], modelType[mm], trainFig, SFtest[sTE],CNN_Acc[n,4], CNN_Acc[n,5])
                 n = n +1
                 
-                print(exp[ee], modelType[mm], trainFig, SFtest[sTE])
+                
                 
     np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OneClassSVM_SFTraining.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
