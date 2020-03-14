@@ -31,7 +31,7 @@ import deepdish as dd
    
 exp = ['Exp1', 'Exp2']
 
-skel= [['23', '31', '266'] ,['0', '50']]
+skel= [['23', '31', '266'] ,['31_0', '31_50']]
 SFtrain = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'] #Train SFs to test on Bulge
 SFtest = ['Skel', 'Bulge'] #Train SFs to test on skel
 
@@ -57,7 +57,7 @@ clf = svm.OneClassSVM(gamma = 'scale', nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty((len(skelNum[ee]) * len(stim[ee])*len(modelType),7), dtype = object)
+    CNN_Acc = np.empty((len(skel[ee]) * len(SFtest)*len(modelType),6), dtype = object)
     
     for mm in range(0, len(modelType)):      
         
@@ -66,62 +66,45 @@ for ee in range(0,len(exp)):
         for sTR in range(0,len(skel[ee])): #The training will now be grouped by skeleton type          
             
             for sTE in range(0,len(SFtest)):
+                if SFtest[sTE] == 'Skel':
+                    altSF = 'Bulge'
+                elif SFtest[sTE] == 'Bulge':
+                    altSF = 'Skel'
+                    
                 
                 trainAcc = 0
                 testAcc = 0
                 for fl in range(0,folK):
                     rN = np.random.choice(frames, frames, replace=False) 
                     
-                    if exp[ee] == 'Exp1':
-                        trainFig = 'Figure_' + skel[ee][sTR]
-                        
-                        X_train =np.vstack([allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:],\
-                                            allActs['Figure_' + skelNum[ee][sTR] + '_Bulge'][rN[0:int(frames/2)],:], \
-                                            allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:],\
-                                            allActs['Figure_' + skelNum[ee][sTR] + '_Skel'][rN[0:int(frames/2)],:]])
-    
-                    elif exp[ee] == 'Exp2':
-                        trainFig = 'Figure_31_' + skelNum[ee][sTR]
-                        X_train =np.vstack([allActs['Figure_31_Skel_' + skelNum[ee][sTR]][rN[0:int(frames/2)],:],\
-                                            allActs['Figure_31_Bulge_' + skelNum[ee][sTR]][rN[0:int(frames/2)],:]])
+                    trainFig = 'Figure_' + skel[ee][sTR]
+                    
+                    #Create train data by stacking surface forms
+                    X_train =np.vstack([allActs[trainFig + '_' + altSF][rN[0:int(frames/2)],:],\
+                                        allActs[trainFig + '_Balloon'][rN[0:int(frames/2)],:], \
+                                        allActs[trainFig + '_Shrink'][rN[0:int(frames/2)],:],\
+                                        allActs[trainFig + '_Wave'][rN[0:int(frames/2)],:]])
                     
                     clf.fit(X_train)
                     tempAcc_train = clf.predict(X_train)
                     trainAcc = trainAcc + ((frames/2) - tempAcc_train[tempAcc_train == -1].size)/(frames/2)
                 
-                    #Test on object, but left out frames
-                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
+                    #Test on object, but left out surface form
+                    X_test = allActs[trainFig + '_' + SFtest[sTE]][rN[int(frames/2):frames],:]
                     tempAcc_test = clf.predict(X_test)
                     testAcc = testAcc + ((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2)
                     
-                CNN_Acc[n,0] = exp[ee]
-                CNN_Acc[n,1] = modelType[mm]
-                CNN_Acc[n,2] = trainFig
-                CNN_Acc[n,3] = 'Figure_' + stim[ee][sTE]
+                CNN_Acc[n,0] = exp[ee] #Exp
+                CNN_Acc[n,1] = modelType[mm] #Model
+                CNN_Acc[n,2] = trainFig #Skel
+                CNN_Acc[n,3] = SFtest[sTE] #Tested SF
                 
-                #Check if first 2 characters are same 
-                #to determine whether skel is the same
-                
-                if exp[ee] == 'Exp1':
-                        
-                    if skelNum[ee][sTR][0:2] == stim[ee][sTE][0:2]:
-                        skel = 'Same'
-                    else:
-                        skel = 'Diff'
-                                           
-                elif exp[ee] == 'Exp2':
-                    if trainFig[-2:] == stim[ee][sTE][-2:]:
-                        skel = 'Same'
-                    else:
-                        skel = 'Diff'
-                    
-                CNN_Acc[n,4] = skel
-                CNN_Acc[n,5] = trainAcc/folK
-                CNN_Acc[n,6] = testAcc/folK
+                CNN_Acc[n,4] = trainAcc/folK
+                CNN_Acc[n,5] = testAcc/folK
                 
                 n = n +1
                 
-        print(exp[ee], modelType[mm])
+                print(exp[ee], modelType[mm], trainFig, SFtest[sTE])
                 
     np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OneClassSVM_SFTraining.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
