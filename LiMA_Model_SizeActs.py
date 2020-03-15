@@ -32,7 +32,8 @@ exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
-modelType = ['FF_IN', 'R_IN']
+modelType = ['FF_SN', 'R_SN']
+modelType = ['FF_SN']
 
 frames = 300
 
@@ -50,7 +51,7 @@ def image_loader(image_name):
     newIM = Image.new('RGB', (int(ogIM.size[0]*IMscale),int(ogIM.size[1]*IMscale)), (119, 119, 119))
     
     #Overlay image on new background
-    #newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
+    newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
     
     #Resize newIM to ogIM size
     newIM.resize(ogIM.size)

@@ -9,22 +9,16 @@ Created on Sun Feb 16 15:16:04 2020
 
 
 from sklearn import svm
-from sklearn.model_selection import RepeatedStratifiedKFold
 import numpy as np
-import os
-from sklearn.model_selection import train_test_split
-import matplotlib
-import matplotlib.pyplot as plt
-import random
-
-from skimage import io
 import deepdish as dd
 
    
 exp = ['Exp1', 'Exp2']
 
-stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','266_Skel', '266_Bulge'],['31_Skel_0', '31_Bulge_0','31_Skel_50', '31_Bulge_50']]
-modelType = ['FF_IN', 'R_IN']
+
+stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
+        ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
+modelType = ['FF_SN', 'R_SN']
 
 
 
@@ -37,11 +31,11 @@ folK = 10
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
 #Gamma parameter determines smoothing of the edges of data (i.e., the )
-clf = svm.OneClassSVM(gamma = 'scale', nu=.01)
+clf = svm.OneClassSVM(nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty((len(stim[ee]) * (len(stim[ee]))*4,8), dtype = object)
+    CNN_Acc = np.empty((len(stim[ee]) * len(stim[ee])*len(modelType),8), dtype = object)
     
     for mm in range(0, len(modelType)):      
         
@@ -80,30 +74,25 @@ for ee in range(0,len(exp)):
                     else:
                         skel = 'Diff'
                     
-                    #check if surface forms are the same
-                    if stim[ee][sTR][-4:] == stim[ee][sTE][-4:]:
-                        SF = 'Same'
-                    else:
-                        SF = 'Diff'
                         
                 elif exp[ee] == 'Exp2':
-                    if stim[ee][sTR][-2:] == stim[ee][sTE][-2:]:
+                    if stim[ee][sTR][4:5] == stim[ee][sTE][4:5]:
                         skel = 'Same'
                     else:
                         skel = 'Diff'
                     
-                    #check if surface forms are the same
-                    if stim[ee][sTR][0:5] == stim[ee][sTE][0:5]:
-                        SF = 'Same'
-                    else:
-                        SF = 'Diff'
+                #check if surface forms are the same
+                if stim[ee][sTR][-4:] == stim[ee][sTE][-4:]:
+                    SF = 'Same'
+                else:
+                    SF = 'Diff'
                             
                 CNN_Acc[n,4] = skel
                 CNN_Acc[n,5] = SF
                 CNN_Acc[n,6] = trainAcc/folK
                 CNN_Acc[n,7] = testAcc/folK
                 
-                print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7])
+                print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,6], CNN_Acc[n,7])
                 
                 n = n +1
                 
@@ -111,39 +100,3 @@ for ee in range(0,len(exp)):
                 
     np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OneClassSVM.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
-#
-#
-#skelActs = np.vstack([allActs['31_Skel_0'],allActs ['31_Skel_50']])
-#bulgeActs = np.vstack([allActs['31_Bulge_0'],allActs ['31_Bulge_50']])
-#
-#
-#clf = svm.SVC(kernel='linear', C=1).fit(skelActs, labels)
-##Add current score to existing
-#tempScore = tempScore + clf.score(bulgeActs, labels)
-#
-#
-#clf = svm.SVC(kernel='linear', C=1).fit(bulgeActs, labels)
-##Add current score to existing
-#tempScore = tempScore + clf.score(skelActs, labels)
-#
-#randList = np.random.choice(300, 300, replace=False) 
-#
-#
-#
-##Train it on half the data
-#clf.fit(allActs['31_Bulge_0'][randList[0:149],:])
-#
-##Check training
-#y_pred_train =  clf.predict(allActs['31_Bulge_0'][randList[0:149],:])
-##Count how many errors it makes from training
-#n_error_train = (300 -y_pred_train[y_pred_train == -1].size)/300
-#
-##Test on other half of the same data
-#y_pred_test = clf.predict(allActs['31_Bulge_0'][randList[150:299],:])
-##Check error rate of left out data
-#n_error_test = (300 - y_pred_test[y_pred_test == -1].size)/300
-#
-#y_pred_outliers = clf.predict(allActs ['31_Bulge_50'])
-#n_error_outliers = (300- y_pred_outliers[y_pred_outliers == 1].size)/300
-#
-#

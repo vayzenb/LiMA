@@ -28,8 +28,9 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge']
-modelType = ['FF_IN', 'R_IN']
+SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
+modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
+modelType = ['R_IN']
 
 
 frames = 300
