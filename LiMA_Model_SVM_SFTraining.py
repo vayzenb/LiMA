@@ -53,7 +53,7 @@ folK = 2
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
 #Gamma parameter determines smoothing of the edges of data (i.e., the )
-clf = svm.OneClassSVM(nu=.01)
+clf = svm.OneClassSVM(gamma = .001, nu=.01)
 
 for ee in range(0,len(exp)):
     n = 0
@@ -87,13 +87,13 @@ for ee in range(0,len(exp)):
                     
                     clf.fit(X_train)
                     tempAcc_train = clf.predict(X_train)
-                    print(tempAcc_train)
-                    trainAcc = trainAcc + ((frames/2) - tempAcc_train[tempAcc_train == -1].size)/(frames/2)
+                    print(((frames/2) - tempAcc_train[tempAcc_train == -1].size)/(frames/2))
+                    trainAcc = trainAcc + (((frames/2)*4) - tempAcc_train[tempAcc_train == -1].size)/((frames/2*4))
                 
                     #Test on object, but left out surface form
                     X_test = allActs[trainFig + '_' + SFtest[sTE]][rN[int(frames/2):frames],:]
                     tempAcc_test = clf.predict(X_test)
-                    print(tempAcc_test)
+                    print(((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2))
                     testAcc = testAcc + ((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2)
                     
                 CNN_Acc[n,0] = exp[ee] #Exp
