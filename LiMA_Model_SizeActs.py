@@ -25,16 +25,18 @@ from itertools import chain
 import deepdish as dd
 
 
+
 IMscale = 1+.25
 
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Balloon', 'Bulge','Shrink','Wave']
-modelType = ['FF_SN', 'R_SN']
+SF = ['Skel', 'Bulge']
+modelType = ['FF_IN', 'R_IN']
 
 frames = 300
 
+to_tensor = T.ToTensor()
 scaler = T.Resize((224, 224))
 normalize = T.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
@@ -45,13 +47,14 @@ def image_loader(image_name):
     ogIM = Image.open(image_name).convert("RGB")
     #Create gray background frame
     #scale background to X% of original image
-    newIM = Image.new('RGBA', (int(ogIM.size[0]*IMscale),int(ogIM.size[1]*IMscale)), (119, 119, 119))
+    newIM = Image.new('RGB', (int(ogIM.size[0]*IMscale),int(ogIM.size[1]*IMscale)), (119, 119, 119))
     
     #Overlay image on new background
-    newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
+    #newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
     
     #Resize newIM to ogIM size
     newIM.resize(ogIM.size)
+    newIM.convert('RGB')
     
     newIM = Variable(normalize(to_tensor(scaler(newIM))).unsqueeze(0))
     return newIM     
@@ -93,7 +96,7 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
         
-        model.eval() #Set model into evaluation mode
+    model.eval() #Set model into evaluation mode
         
     #Loop through the experimental conditions
     for ee in range(0,len(exp)):
@@ -109,4 +112,4 @@ for mm in range(0, len(modelType)):
                     
                 print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
                     
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Size' + str((IMscale-1)*1000)+ '.h5', allActs)
+                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Size' + str(int((IMscale-1)*100))+ '.h5', allActs)

@@ -28,8 +28,8 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Balloon', 'Bulge','Shrink','Wave']
-modelType = ['FF_SN', 'R_SN']
+SF = ['Skel', 'Bulge']
+modelType = ['FF_IN', 'R_IN']
 
 
 frames = 300
@@ -82,7 +82,7 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
         
-        model.eval() #Set model into evaluation mode
+    model.eval() #Set model into evaluation mode
         
     #Loop through the experimental conditions
     for ee in range(0,len(exp)):
