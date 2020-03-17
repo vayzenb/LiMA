@@ -8,21 +8,23 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge'};
 
-imScale = .25;
+imScale = .50;
 frames = 301; %Number of frames
+
+rF = randperm(frames,20);
 
 
 for ee = 1:length(exp)
 	allData = {};
-    ogGBJ_Acts = [];
-    sizeGBJ_MAT = [];
 	n=1;
+
 	for sk = 1:length(skel{ee})
 		for sf = 1:length(SF)
-			stimActs = [];
-			sizeActs = [];
+            stimActs = [];
+            sizeActs = [];
 			
-			for fn = 1:frames
+            st = 1;
+			for fn = 1:length(rF)
 				%Load original image
 				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(fn), '.jpg']);
 				padSize = round(((size(ogIM,1)*(imScale+1))- size(ogIM,1))/2,0);
@@ -51,17 +53,16 @@ for ee = 1:length(exp)
 				ogGBJ = ogGBJ(:)';
 				sizeGBJ = sizeGBJ(:)';
 				sfGBJ = sfGBJ(:)';
+              
+                %Save to matrix
+				stimActs(st,:) = ogGBJ;
+				sizeActs(st,:) = sizeGBJ;
                 
-                ogGBJ_MAT(n,:) = ogGBJ;
-                sizeGBJ_MAT(n,:) = sizeGBJ;
-
 				%Calculate diff
 				sizeDiff = mean(abs(ogGBJ - sizeGBJ));
 				sfDiff = mean(abs(ogGBJ - sfGBJ));
 
-				%Save to matrix
-				stimActs(fn,:) = ogGBJ;
-				sizeActs(fn,:) = sizeDiff;
+
 
 				%Save results
 				allData{n,1} = skel{ee}{sk};
@@ -74,13 +75,14 @@ for ee = 1:length(exp)
 
 			end
 			%Save GBJ acts as file
-			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs'], 'ogGBJ_MAT');
-			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs_Size25'], 'sizeGBJ_MAT');
-            sk
+			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs'], 'stimActs');
+			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs_Size', int2str(imScale*100)], 'sizeActs');
+            stim{ee}{st}
+            st = st+1;
 		end
 	end
 	allData = cell2table(allData, 'VariableNames', {'Skel', 'SF', 'Frame', 'sfDiff', 'sizeDiff'});
-	writetable(allData, ['Results/LiMA_', exp{ee}, '_GBJ_diffs.csv']);
+	writetable(allData, ['Results/LiMA_', exp{ee}, '_GBJ_diffs_',  int2str(imScale*100), '.csv']);
 	
 
 end

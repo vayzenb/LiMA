@@ -8,8 +8,10 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge'};
 
-imScale = .30;
+imScale = .60;
 frames = 301; %Number of frames
+
+rF = randperm(frames,20);
 
 
 for ee = 1:length(exp)
@@ -22,9 +24,9 @@ for ee = 1:length(exp)
             sizeActs = [];
 			
             st = 1;
-			for fn = 1:frames
+			for fn = 1:length(rF)
 				%Load original image
-				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(fn), '.jpg']);
+				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(rF(fn)), '.jpg']);
 				padSize = round(((size(ogIM,1)*(imScale+1))- size(ogIM,1))/2,0);
 
 				%Resize images by 25%
@@ -32,9 +34,9 @@ for ee = 1:length(exp)
 				
 				%Load diff SF image
 				if strcmp(SF{sf},'Skel')
-					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Bulge_', int2str(fn), '.jpg']);
+					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Bulge_', int2str(rF(fn)), '.jpg']);
 				else
-					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Skel_', int2str(fn), '.jpg']);
+					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Skel_', int2str(rF(fn)), '.jpg']);
 				end
 				
 				%Resize to GBJ input size
@@ -74,12 +76,13 @@ for ee = 1:length(exp)
 			end
 			%Save GBJ acts as file
 			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs'], 'stimActs');
-			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs_Size25'], 'sizeActs');
+			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs_Size', int2str(imScale*100)], 'sizeActs');
             stim{ee}{st}
+            st = st+1;
 		end
 	end
 	allData = cell2table(allData, 'VariableNames', {'Skel', 'SF', 'Frame', 'sfDiff', 'sizeDiff'});
-	writetable(allData, ['Results/LiMA_', exp{ee}, '_GBJ_diffs.csv']);
+	writetable(allData, ['Results/LiMA_', exp{ee}, '_GBJ_diffs_',  int2str(imScale*100), '.csv']);
 	
 
 end
