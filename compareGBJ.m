@@ -8,7 +8,8 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge'};
 
-imScale = .60;
+imScale = .15;
+imTrans = .2;
 frames = 301; %Number of frames
 
 rF = randperm(frames,20);
@@ -27,10 +28,18 @@ for ee = 1:length(exp)
 			for fn = 1:length(rF)
 				%Load original image
 				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(rF(fn)), '.jpg']);
-				padSize = round(((size(ogIM,1)*(imScale+1))- size(ogIM,1))/2,0);
+                sizeIM = zeros(round(size(ogIM,1)*(imScale+1)), round(size(ogIM,1)*(imScale+1)),3,'uint8');
+                sizeIM(:,:,1) = 119;
+                sizeIM(:,:,2) = 119;
+                sizeIM(:,:,3) = 119;
+                %Overlay OG image on blank in top left corner
+                %This reduces the size and shifts it by imScale %
+                sizeIM(1:size(ogIM,1), 1:size(ogIM,1), :) = ogIM;
+                
+                %padSize = round(((size(ogIM,1)*(imScale+1))- size(ogIM,1))/2,0);
 
 				%Resize images by 25%
-				sizeIM = padarray(ogIM, [padSize, padSize], 119); %Pad with 119 (gray) by % size reduction
+				%sizeIM = padarray(ogIM, [0, padSize*2], 119); %Pad with 119 (gray) by % size reduction
 				
 				%Load diff SF image
 				if strcmp(SF{sf},'Skel')

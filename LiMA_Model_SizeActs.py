@@ -26,14 +26,14 @@ import deepdish as dd
 
 
 
-IMscale = 1+.25
+IMscale = 1+.2
 
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
 modelType = ['FF_SN', 'R_SN']
-modelType = ['FF_SN']
+modelType = ['R_SN']
 
 frames = 300
 
@@ -48,10 +48,11 @@ def image_loader(image_name):
     ogIM = Image.open(image_name).convert("RGB")
     #Create gray background frame
     #scale background to X% of original image
-    newIM = Image.new('RGB', (int(ogIM.size[0]*IMscale),int(ogIM.size[1]*IMscale)), (119, 119, 119))
+    newIM = Image.new('RGB', (np.round(int(ogIM.size[0]*IMscale)),np.round(int(ogIM.size[1]*IMscale))), (119, 119, 119))
     
     #Overlay image on new background
-    newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
+    #newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
+    newIM.paste(ogIM,(0,0))
     
     #Resize newIM to ogIM size
     newIM.resize(ogIM.size)
