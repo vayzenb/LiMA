@@ -8,7 +8,7 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge'};
 
-imScale = .15;
+imScale = .2;
 imTrans = .2;
 frames = 301; %Number of frames
 
@@ -25,9 +25,9 @@ for ee = 1:length(exp)
             sizeActs = [];
 			
             st = 1;
-			for fn = 1:length(rF)
+			for fn = 1:length(frames)
 				%Load original image
-				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(rF(fn)), '.jpg']);
+				ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(fn), '.jpg']);
                 sizeIM = zeros(round(size(ogIM,1)*(imScale+1)), round(size(ogIM,1)*(imScale+1)),3,'uint8');
                 sizeIM(:,:,1) = 119;
                 sizeIM(:,:,2) = 119;
@@ -43,9 +43,9 @@ for ee = 1:length(exp)
 				
 				%Load diff SF image
 				if strcmp(SF{sf},'Skel')
-					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Bulge_', int2str(rF(fn)), '.jpg']);
+					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Bulge_', int2str(fn), '.jpg']);
 				else
-					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Skel_', int2str(rF(fn)), '.jpg']);
+					sfIM = imread(['Frames/Figure_', skel{ee}{sk},'_Skel_', int2str(fn), '.jpg']);
 				end
 				
 				%Resize to GBJ input size
@@ -68,8 +68,8 @@ for ee = 1:length(exp)
 				sizeActs(st,:) = sizeGBJ;
                 
 				%Calculate diff
-				sizeDiff = mean(abs(ogGBJ - sizeGBJ));
-				sfDiff = mean(abs(ogGBJ - sfGBJ));
+				sizeDiff = norm(ogGBJ - sizeGBJ);
+				sfDiff = norm(ogGBJ - sfGBJ);
 
 
 
