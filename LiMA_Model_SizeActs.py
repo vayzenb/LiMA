@@ -33,7 +33,7 @@ exp = ['Exp1', 'Exp2']
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
 modelType = ['FF_SN', 'R_SN']
-modelType = ['R_SN']
+modelType = ['FF_SN']
 
 frames = 300
 

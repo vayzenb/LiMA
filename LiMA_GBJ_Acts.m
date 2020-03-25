@@ -89,7 +89,7 @@ for ee = 1:length(exp)
 			save(['GBJ_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJActs_Size', int2str(imScale*100)], 'sizeActs');
                 
         end
-        sk
+        
 	end
 	allData = cell2table(allData, 'VariableNames', {'Skel', 'SF', 'Frame', 'sfDiff', 'sizeDiff'});
 	writetable(allData, ['Results/LiMA_', exp{ee}, '_GBJ_diffs_',  int2str(imScale*100), '.csv']);
