@@ -8,7 +8,7 @@ Created on Sun Feb 16 14:42:11 2020
 """
 
 import os
-#os.chdir('C:/Users/vayzenb/Desktop/GitHub Repos/LiMA/')
+#os.chdir('C:/Users/vayze/Desktop/GitHub Repos/LiMA/')
 
 import numpy as np
 import pandas as pd
@@ -28,9 +28,9 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
+SF = ['Skel', 'Bulge']
 modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
-modelType = ['R_IN']
+modelType = ['FF_SN', 'FF_IN']
 
 
 frames = 300
@@ -51,10 +51,10 @@ for mm in range(0, len(modelType)):
         #select model to run
     if modelType[mm] == 'FF_IN':
         model = torchvision.models.alexnet(pretrained=True)
-        new_classifier = nn.Sequential(*list(model.classifier.children())[:-2])
-        model.classifier = new_classifier #replace model classifier with stripped version
-        layer = "fc7"
-        actNum = 4096
+        #new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        #model.classifier = new_classifier #replace model classifier with stripped version
+        layer = "fc8"
+        actNum = 1000
         
     elif modelType[mm] == 'R_IN':
         model = torchvision.models.resnet50(pretrained=True)
@@ -67,11 +67,11 @@ for mm in range(0, len(modelType)):
         #model.features = torch.nn.DataParallel(model.features)
         checkpoint = torch.load('ShapeNet_AlexNet_Weights.pth.tar')
         model.load_state_dict(checkpoint)
-        new_classifier = nn.Sequential(*list(model.classifier.children())[:-2])
-        model.classifier = new_classifier #replace model classifier with stripped version
+        #new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        #model.classifier = new_classifier #replace model classifier with stripped version
         #model.to(device)
-        layer = "fc7"
-        actNum = 4096
+        layer = "fc8"
+        actNum = 1000
         
     elif modelType[mm] == 'R_SN':
         model = torchvision.models.resnet50(pretrained=False)
