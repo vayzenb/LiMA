@@ -7,7 +7,7 @@ Created on Sun Mar 15 10:28:07 2020
 @author: vayze
 """
 import os
-#os.chdir('C:/Users/vayzenb/Desktop/GitHub Repos/LiMA/')
+#os.chdir('C:/Users/vayze/Desktop/GitHub Repos/LiMA/')
 
 import numpy as np
 import pandas as pd
