@@ -52,9 +52,9 @@ for ee in range(0,len(exp)):
                 for fl in range(0,folK):
                     #instantiate SVM everytime
                     ocs = svm.OneClassSVM(nu=.01) #one class SVM
-                    cov= EllipticEnvelope(random_state=0, contamination=0.01) #Elliptic Envelope classifier
+                    #cov= EllipticEnvelope(random_state=0, contamination=0.01) #Elliptic Envelope classifier
                     isof=IsolationForest(random_state=0, contamination=0.01) #Isolation forest classifier
-                    lof = LocalOutlierFactor(n_neighbors=30, contamination=0.01) #local outlier factor
+                    #lof = LocalOutlierFactor(n_neighbors=30, contamination=0.01) #local outlier factor
                     
                     
                     rN = np.random.choice(frames, frames, replace=False) 
@@ -63,35 +63,35 @@ for ee in range(0,len(exp)):
                     
                     #fit all classifiers
                     ocs.fit(X_train) #Fit one-class SVM
-                    cov.fit(X_train)
+                    #cov.fit(X_train)
                     isof.fit(X_train)
-                    lof.fit(X_train)
+                    #lof.fit(X_train)
                     
                     #Predict training data
                     ocs_train = ocs.predict(X_train)
-                    cov_Train = cov.predict(X_train)
+                    #cov_Train = cov.predict(X_train)
                     isof_Train = isof.predict(X_train)
-                    lof_Train = lof.predict(X_train)
+                    #lof_Train = lof.predict(X_train)
                     
                     #Compute training data scores
                     trainAcc_ocs = ((frames/2) - ocs_train[ocs_train == -1].size)/(frames/2)
-                    trainAcc_cov = ((frames/2) - cov_Train[cov_Train == -1].size)/(frames/2)
+                    #trainAcc_cov = ((frames/2) - cov_Train[cov_Train == -1].size)/(frames/2)
                     trainAcc_isof = ((frames/2) - isof_Train[isof_Train == -1].size)/(frames/2)
-                    trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
+                    #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
                     X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
                     
                     #Predict test data
                     ocs_test = ocs.predict(X_test)
-                    cov_test = cov.predict(X_test)
+                    #cov_test = cov.predict(X_test)
                     isof_test = isof.predict(X_test)
-                    lof_test = lof.predict(X_test)
+                    #lof_test = lof.predict(X_test)
                     
                     testAcc_ocs = ((frames/2) - ocs_test[ocs_test == -1].size)/(frames/2)
-                    testAcc_cov = ((frames/2) - cov_test[cov_test == -1].size)/(frames/2)
+                    #testAcc_cov = ((frames/2) - cov_test[cov_test == -1].size)/(frames/2)
                     testAcc_isof = ((frames/2) - isof_test[isof_test == -1].size)/(frames/2)
-                    testAcc_lof = ((frames/2) - lof_test[lof_test == -1].size)/(frames/2)
+                    #testAcc_lof = ((frames/2) - lof_test[lof_test == -1].size)/(frames/2)
                     
                     
                     CNN_Acc[n,0] = exp[ee]
@@ -126,15 +126,15 @@ for ee in range(0,len(exp)):
                     CNN_Acc[n,5] = SF
                     CNN_Acc[n,6] = trainAcc_ocs
                     CNN_Acc[n,7] = testAcc_ocs
-                    CNN_Acc[n,8] = trainAcc_cov
-                    CNN_Acc[n,9] = testAcc_cov
-                    CNN_Acc[n,10] = trainAcc_isof
-                    CNN_Acc[n,11] = testAcc_isof
-                    CNN_Acc[n,12] = trainAcc_lof
-                    CNN_Acc[n,13] = testAcc_lof
+                    #CNN_Acc[n,8] = trainAcc_cov
+                    #CNN_Acc[n,9] = testAcc_cov
+                    CNN_Acc[n,8] = trainAcc_isof
+                    CNN_Acc[n,9] = testAcc_isof
+                    #CNN_Acc[n,12] = trainAcc_lof
+                    #CNN_Acc[n,13] = testAcc_lof
 
                     
-                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7], CNN_Acc[n,9], CNN_Acc[n,11], CNN_Acc[n,13])
+                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7], CNN_Acc[n,9], CNN_Acc[n,11])
                     
                     n = n +1
                 
