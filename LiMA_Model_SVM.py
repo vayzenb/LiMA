@@ -37,7 +37,7 @@ folK = 10
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,9), dtype = object)
+    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,10), dtype = object)
     
     for mm in range(0, len(modelType)):      
         

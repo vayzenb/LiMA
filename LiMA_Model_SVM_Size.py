@@ -10,7 +10,7 @@ Created on Sun Mar 15 15:32:58 2020
 
 from sklearn import svm
 from sklearn.ensemble import IsolationForest
-
+import warnings
 import numpy as np
 import os
 from sklearn.model_selection import train_test_split
@@ -44,7 +44,7 @@ folK = 10
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,9), dtype = object)
+    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,10), dtype = object)
     
     for mm in range(0, len(modelType)):      
         
@@ -58,6 +58,7 @@ for ee in range(0,len(exp)):
                 for fl in range(0,folK):
                     #instantiate SVM everytime
                     #instantiate SVM everytime
+                    warnings.filterwarnings("ignore")
                     ocs = svm.OneClassSVM(nu=.01) #one class SVM
                     #cov= EllipticEnvelope(random_state=0, contamination=0.01) #Elliptic Envelope classifier
                     isof=IsolationForest(random_state=0, contamination=0.01) #Isolation forest classifier
@@ -87,7 +88,7 @@ for ee in range(0,len(exp)):
                     #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
-                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
+                    X_test = allActsSize['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
                     
                     #Predict test data
                     ocs_test = ocs.predict(X_test)
@@ -133,15 +134,12 @@ for ee in range(0,len(exp)):
                     CNN_Acc[n,5] = SF
                     CNN_Acc[n,6] = trainAcc_ocs
                     CNN_Acc[n,7] = testAcc_ocs
-                    #CNN_Acc[n,8] = trainAcc_cov
-                    #CNN_Acc[n,9] = testAcc_cov
                     CNN_Acc[n,8] = trainAcc_isof
                     CNN_Acc[n,9] = testAcc_isof
-                    #CNN_Acc[n,12] = trainAcc_lof
-                    #CNN_Acc[n,13] = testAcc_lof
+
 
                     
-                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7], CNN_Acc[n,9], CNN_Acc[n,11])
+                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7], CNN_Acc[n,9])
                     
                     n = n +1
                  
