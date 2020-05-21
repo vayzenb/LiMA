@@ -9,9 +9,7 @@ Created on Sun Feb 16 15:16:04 2020
 
 
 from sklearn import svm
-from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
-from sklearn.neighbors import LocalOutlierFactor
 import numpy as np
 import deepdish as dd
 
@@ -39,7 +37,7 @@ folK = 10
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,14), dtype = object)
+    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,9), dtype = object)
     
     for mm in range(0, len(modelType)):      
         

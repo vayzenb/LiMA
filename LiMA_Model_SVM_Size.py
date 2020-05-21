@@ -9,7 +9,8 @@ Created on Sun Mar 15 15:32:58 2020
 
 
 from sklearn import svm
-from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.ensemble import IsolationForest
+
 import numpy as np
 import os
 from sklearn.model_selection import train_test_split
@@ -43,7 +44,7 @@ folK = 10
 
 for ee in range(0,len(exp)):
     n = 0
-    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,8), dtype = object)
+    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,9), dtype = object)
     
     for mm in range(0, len(modelType)):      
         
@@ -56,20 +57,49 @@ for ee in range(0,len(exp)):
                 testAcc = 0
                 for fl in range(0,folK):
                     #instantiate SVM everytime
-                    clf = svm.OneClassSVM(nu=.01)
+                    #instantiate SVM everytime
+                    ocs = svm.OneClassSVM(nu=.01) #one class SVM
+                    #cov= EllipticEnvelope(random_state=0, contamination=0.01) #Elliptic Envelope classifier
+                    isof=IsolationForest(random_state=0, contamination=0.01) #Isolation forest classifier
+                    #lof = LocalOutlierFactor(n_neighbors=30, contamination=0.01) #local outlier factor
+                    
                     
                     rN = np.random.choice(frames, frames, replace=False) 
                     
                     X_train = allActs['Figure_' + stim[ee][sTR]][rN[0:int(frames/2)],:]
                     
-                    clf.fit(X_train)
-                    tempAcc_train = clf.predict(X_train)
-                    trainAcc = ((frames/2) - tempAcc_train[tempAcc_train == -1].size)/(frames/2)
+                    #fit all classifiers
+                    ocs.fit(X_train) #Fit one-class SVM
+                    #cov.fit(X_train)
+                    isof.fit(X_train)
+                    #lof.fit(X_train)
+                    
+                    #Predict training data
+                    ocs_train = ocs.predict(X_train)
+                    #cov_Train = cov.predict(X_train)
+                    isof_Train = isof.predict(X_train)
+                    #lof_Train = lof.predict(X_train)
+                    
+                    #Compute training data scores
+                    trainAcc_ocs = ((frames/2) - ocs_train[ocs_train == -1].size)/(frames/2)
+                    #trainAcc_cov = ((frames/2) - cov_Train[cov_Train == -1].size)/(frames/2)
+                    trainAcc_isof = ((frames/2) - isof_Train[isof_Train == -1].size)/(frames/2)
+                    #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
-                    X_test = allActsSize['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
-                    tempAcc_test = clf.predict(X_test)
-                    testAcc = ((frames/2) - tempAcc_test[tempAcc_test == -1].size)/(frames/2)
+                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
+                    
+                    #Predict test data
+                    ocs_test = ocs.predict(X_test)
+                    #cov_test = cov.predict(X_test)
+                    isof_test = isof.predict(X_test)
+                    #lof_test = lof.predict(X_test)
+                    
+                    testAcc_ocs = ((frames/2) - ocs_test[ocs_test == -1].size)/(frames/2)
+                    #testAcc_cov = ((frames/2) - cov_test[cov_test == -1].size)/(frames/2)
+                    testAcc_isof = ((frames/2) - isof_test[isof_test == -1].size)/(frames/2)
+                    #testAcc_lof = ((frames/2) - lof_test[lof_test == -1].size)/(frames/2)
+                    
                     
                     CNN_Acc[n,0] = exp[ee]
                     CNN_Acc[n,1] = modelType[mm]
@@ -101,13 +131,20 @@ for ee in range(0,len(exp)):
                                 
                     CNN_Acc[n,4] = skel
                     CNN_Acc[n,5] = SF
-                    CNN_Acc[n,6] = trainAcc
-                    CNN_Acc[n,7] = testAcc
+                    CNN_Acc[n,6] = trainAcc_ocs
+                    CNN_Acc[n,7] = testAcc_ocs
+                    #CNN_Acc[n,8] = trainAcc_cov
+                    #CNN_Acc[n,9] = testAcc_cov
+                    CNN_Acc[n,8] = trainAcc_isof
+                    CNN_Acc[n,9] = testAcc_isof
+                    #CNN_Acc[n,12] = trainAcc_lof
+                    #CNN_Acc[n,13] = testAcc_lof
+
                     
-                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,6], CNN_Acc[n,7])
+                    print(exp[ee], modelType[mm], skel, SF, CNN_Acc[n,7], CNN_Acc[n,9], CNN_Acc[n,11])
                     
                     n = n +1
                  
                 
-        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OneClassSVM_Size' + IMsize + '.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllClassifiers_Size' + IMsize + '.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
