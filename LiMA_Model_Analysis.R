@@ -8,135 +8,131 @@ library(boot)
 setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
-cond = c('', '_Size20')
-models= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
+cond = c('View', 'SF', 'Size')
+ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
+classifier = c("OCS", "ISOF")
 
-ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof')
+ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof', "Cond")
+
 sz = 20
 
-iter = 10000
+iter = 1000
 
 alpha = .05
 for (ee in 1:length(exp)){
  #Load infant data
   df.infant = read.table(paste("Infant_Data/Experiment_",ee,"_Infant_Data.csv", sep=""),header = TRUE, sep=",")
-  df.mSF = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers.csv", sep=""),header = FALSE, sep=",")
-  colnames(df.mSF) = ModelCols
-  df.mSize = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers_Size", sz,".csv", sep=""),header = FALSE, sep=",")
-  colnames(df.mSize) = ModelCols
+  df.sf = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers.csv", sep=""),header = FALSE, sep=",")
+  df.sf$Cond = "SF"
+  
+  df.sz = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers_Size", sz,".csv", sep=""),header = FALSE, sep=",")
+  df.sz$Cond = "Size"
+  
+  df = rbind(df.sf, df.sz)
+  colnames(df) = ModelCols
   
   #Create coded score for different skeleton objects (e.g., a 0 cat accuracy is actually 100% correct)
-  df.mSF$OCS = df.mSF$tsAcc_ocs
-  df.mSF$OCS[df.mSF$Skel == 'Diff'] = 1-df.mSF$OCS[df.mSF$Skel == 'Diff']
-  df.mSF$ISOF = df.mSF$tsAcc_isof
-  df.mSF$ISOF[df.mSF$Skel == 'Diff'] = 1-df.mSF$ISOF[df.mSF$Skel == 'Diff']
+  df$OCS = df$tsAcc_ocs
+  df$OCS[df$Skel == 'Diff'] = 1-df$OCS[df$Skel == 'Diff']
   
-  df.mSize$OCS = df.mSize$tsAcc_ocs
-  df.mSize$OCS[df.mSize$Skel == 'Diff'] = 1-df.mSize$OCS[df.mSize$Skel == 'Diff']
-  df.mSize$ISOF = df.mSize$tsAcc_isof
-  df.mSize$ISOF[df.mSize$Skel == 'Diff'] = 1-df.mSize$ISOF[df.mSize$Skel == 'Diff']
+  df$ISOF = df$tsAcc_isof
+  df$ISOF[df$Skel == 'Diff'] = 1-df$ISOF[df$Skel == 'Diff']
   
   
+
+  #set up empty matrices for each condition and classifier (the number of rows corresponds to the model)
   bootMat.infant = matrix(0,1,iter)
-  
-  #the number of rows is multiplied by 2 because of the two classifiers
-  bootMat.view = matrix(0,length(models)*2,iter)
-  bootMat.SF = matrix(0,length(models)*2,iter)
-  bootMat.size = matrix(0,length(models)*2,iter)
-  
-  
+  bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),
+                       matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter))
   
   #Start boot test
   for (ii in 1:iter){
+    #Sample with replacement for infants
+    tempInfant = sample_n(df.infant,nrow(df.infant), replace = TRUE)
     
-  #Sample with replacement
-  tempInfant = sample_n(df.infant,nrow(df.infant), replace = TRUE)
-  
-  novelDiff = mean(tempInfant$Novel) - mean(tempInfant$HabEnd)
-  famDiff = mean(tempInfant$Familiar) - mean(tempInfant$HabEnd)
-  if(novelDiff < 0){novelDiff = 0}
-  if(famDiff < 0){famDiff = 0}
-  bootMat.infant[1,ii] =  novelDiff / (novelDiff + famDiff)
-
-  
-  #loop through models and resample for each model
-  for (mm in 1:length(models)){
-    #Pull out values from each model and each condition
-    tempView = df.mSF[df.mSF$Model == models[mm] & df.mSF$SF == "Same",]
-    tempSF = df.mSF[df.mSF$Model == models[mm] & df.mSF$SF == "Diff",]
-    tempSize = df.mSize[df.mSize$Model == models[mm] & df.mSize$SF == "Same",]
+    novelDiff = mean(tempInfant$Novel) - mean(tempInfant$HabEnd)
+    famDiff = mean(tempInfant$Familiar) - mean(tempInfant$HabEnd)
+    if(novelDiff < 0){novelDiff = 0}
+    if(famDiff < 0){famDiff = 0}
+    bootMat.infant[1,ii] =  novelDiff / (novelDiff + famDiff)
     
-    #sample with replacement
-    tempView = sample_n(tempView,nrow(tempView), replace = TRUE)
-    tempSF = sample_n(tempSF,nrow(tempSF), replace = TRUE)
-    tempSize = sample_n(tempSize,nrow(tempSize), replace = TRUE)
-    
-    #Store new average ; first line is OSC value, second is ISOF value
-    bootMat.view[mm, ii] = (mean(tempView$OCS[tempView$Skel=="Same"], na.rm = TRUE) +
-      mean(tempView$OCS[tempView$Skel=="Diff"], na.rm = TRUE))/2
+    n = 1
+   for (cl in classifier){
+    for (cc in cond){
+     for (mm in 1:length(ModelType)){
       
-    bootMat.view[mm +length(models), ii] = (mean(tempView$ISOF[tempView$Skel=="Same"], na.rm = TRUE) +
-      mean(tempView$ISOF[tempView$Skel=="Diff"], na.rm = TRUE))/2
-      
+       #Select appropriate data depending on condition
+      if(cc == 'View' ) {
+       tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "SF",]
+       
+      }else if (cc == 'SF' )  {
+        tempMAT = df[df$Model == ModelType[mm] & df$SF == "Diff" & df$Cond == "SF",]
+       
+      }else if (cc == "Size") {
+        tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "Size",]
+      }
+       
+       #Sample with replacement
+       tempMAT = sample_n(tempMAT,nrow(tempMAT), replace = TRUE)
+       #Add to appropriate matrix
+       bootMat.model[[n]][mm,ii] = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
+                                      mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+       
+     }
+      n= n +1
+    }
+   }
     
-    bootMat.SF[mm, ii] = (mean(tempSF$OCS[tempSF$Skel=="Same"], na.rm = TRUE) + 
-      mean(tempSF$OCS[tempSF$Skel=="Diff"], na.rm = TRUE))/2
-    bootMat.SF[mm +length(models), ii] = (mean(tempSF$ISOF[tempSF$Skel=="Same"], na.rm = TRUE) + 
-      mean(tempSF$ISOF[tempSF$Skel=="Diff"], na.rm = TRUE))/2
-    
-    bootMat.size[mm, ii] = (mean(tempSize$OCS[tempSize$Skel=="Same"], na.rm = TRUE) +
-      mean(tempSize$OCS[tempSize$Skel=="Diff"], na.rm = TRUE))/2
-    bootMat.size[mm +length(models), ii] = (mean(tempSize$ISOF[tempSize$Skel=="Same"], na.rm = TRUE) +
-      mean(tempSize$OCS[tempSize$Skel=="Diff"], na.rm = TRUE))/2
-    
+  
   }
   
   
+  #Write to file
+  ModelSummary = matrix(0,length(bootMat.model)*length(ModelType) +1,6)
   
-  }
-  #Create summary matrix
-  ModelSummary.SF = matrix(0,nrow(bootMat.SF)+1,6)
-  ModelSummary.View = matrix(0,nrow(bootMat.SF),6)
-  ModelSummary.Size = matrix(0,nrow(bootMat.SF),6)
-  
-  #Calcualte infant data
   novelDiff = mean(df.infant$Novel) - mean(df.infant$HabEnd)
   famDiff = mean(df.infant$Familiar) - mean(df.infant$HabEnd)
-  CIs = quantile(bootMat.infant, probs = c(alpha/2, 1-alpha/2));
-  ModelSummary.SF[1,] = c("Infant", "Infant", "SF", novelDiff/(novelDiff+famDiff),CIs[1],CIs[2]) 
+  CI = quantile(bootMat.infant, probs = c(alpha/2, 1-alpha/2));
+  ModelSummary[1,] = c("Infant", "Infant", "SF", novelDiff/(novelDiff + famDiff),CI[1],CI[2])
   
-  ModelSummary.View[,1] = c(models, models)
-  ModelSummary.View[,2] = c(rep("OCS", length(models)), rep("ISOF", length(models)))
-  ModelSummary.View[,3] = "View"
-  
-  ModelSummary.SF[,1] = c(models, models)
-  ModelSummary.SF[,2] = c(rep("OCS", length(models)), rep("ISOF", length(models)))
-  ModelSummary.SF[,3] = "SF"
-  
-  
-  ModelSummary.Size[,1] = c(models, models)
-  ModelSummary.Size[,2] = c(rep("OCS", length(models)), rep("ISOF", length(models)))
-  ModelSummary.Size[,3] = "Size"
-  
+  ms = 2
+  n=1
+  for (cl in classifier){
+    for (cc in cond){
+      for (mm in 1:length(ModelType)){
+        
+        #Select appropriate data depending on condition
+        if(cc == 'View' ) {
+          tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "SF",]
+          
+        }else if (cc == 'SF' )  {
+          tempMAT = df[df$Model == ModelType[mm] & df$SF == "Diff" & df$Cond == "SF",]
+          
+        }else if (cc == "Size") {
+          tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "Size",]
+        }
+        
+        tempMean = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
+                      mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+        
+        CI = quantile(bootMat.model[[n]][mm,], probs = c(alpha/2, 1-alpha/2));
+        ModelSummary[ms,] = c(ModelType[mm], cl, cc, tempMean,CI[1],CI[2])
+        ms= ms +1  
 
-  
-  for (mm in 1:(nrow(bootMat.view))){
-    ModelSummary.View[mm,4] = mean(df.mSF[df.mSF$Model == models[mm] & df.mSF$SF == "Same",])
-    
-      tempView = df.mSF[df.mSF$Model == models[mm] & df.mSF$SF == "Same",]
-    tempSF = df.mSF[df.mSF$Model == models[mm] & df.mSF$SF == "Diff",]
-    tempSize = df.mSize[df.mSize$Model == models[mm] & df.mSize$SF == "Same",]
-    #Calculate CIs
-    CIs.view = quantile(bootMat.view[mm,], probs = c(alpha/2, 1-alpha/2));
-    CIs.SF = list(quantile(bootMat.SF[mm,], probs = c(alpha/2, 1-alpha/2)));
-    CIs.size = list(quantile(bootMat.size[mm,], probs = c(alpha/2, 1-alpha/2)));
-    
-    ModelSummary.View[mm,5:6] =CIs.view
-    ModelSummary.SF[mm,5:6] =CIs.view
-    ModelSummary.Size[mm,5:6] =CIs.view
-    
-    
+        
+      }
+      n= n + 1
+    }
   }
-  #Add all Values to Summary
+  
+  colnames(ModelSummary) = c("Model", "Classifier", "Condition", "Acc", "CI_Low", "CI_High")
+  
+  assign(paste(exp[ee], '.Models', sep=""), ModelSummary)
   
 }
+
+save(Exp1.Models, Exp2.Models, file="Infant_Data/LiMA_Model_Data.RData")
+   
+
+
+    

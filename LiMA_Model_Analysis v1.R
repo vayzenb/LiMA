@@ -14,7 +14,7 @@ models= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
 ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof')
 sz = 20
 
-iter = 10000
+iter = 10
 
 alpha = .05
 for (ee in 1:length(exp)){
