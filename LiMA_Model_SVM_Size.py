@@ -27,9 +27,10 @@ exp = ['Exp1', 'Exp2']
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
         ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
+modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
 
 IMsize = str(20)
-
+manip = 'Side'
 
 frames= 300
 labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
@@ -50,7 +51,7 @@ for ee in range(0,len(exp)):
         
         
         allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
-        allActsSize = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Size' + IMsize +'.h5')
+        allActsTest = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_' + manip +'.h5')
         for sTR in range(0,len(stim[ee])):
             for sTE in range(0,len(stim[ee])):
                 trainAcc = 0
@@ -88,7 +89,7 @@ for ee in range(0,len(exp)):
                     #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
-                    X_test = allActsSize['Figure_' + stim[ee][sTE]][rN[int(frames/2):frames],:]
+                    X_test = allActsTest['Figure_' + stim[ee][sTE] +'_' + manip][rN[int(frames/2):frames],:]
                     
                     #Predict test data
                     ocs_test = ocs.predict(X_test)
@@ -144,5 +145,5 @@ for ee in range(0,len(exp)):
                     n = n +1
                  
                 
-        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllClassifiers_Size' + IMsize + '.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllClassifiers_' + manip + '.csv', CNN_Acc, delimiter=',', fmt= '%s')
             

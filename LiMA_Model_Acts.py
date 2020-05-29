@@ -28,9 +28,9 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge']
+SF = ['Skel_Side', 'Bulge_Side']
 modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
-modelType = ['FF_SN', 'FF_IN']
+#modelType = ['FF_SN', 'FF_IN', ]
 
 
 frames = 300
@@ -44,6 +44,7 @@ def image_loader(image_name):
     """load image, returns cuda tensor"""
     image = Image.open(image_name).convert("RGB")
     image = Variable(normalize(to_tensor(scaler(image))).unsqueeze(0))
+    
     return image     
 
 
@@ -82,7 +83,8 @@ for mm in range(0, len(modelType)):
         #model.to(device)
         layer = "avgpool"
         actNum = 2048
-        
+    
+    model.cuda()
     model.eval() #Set model into evaluation mode
         
     #Loop through the experimental conditions
@@ -94,11 +96,12 @@ for mm in range(0, len(modelType)):
                 allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
                 for ff in range(0, frames):
                     IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
-                    vec = model(IM).detach().numpy() #Extract image vector
+                    IM = IM.cuda()
+                    vec = model(IM).cpu().detach().numpy() #Extract image vector
                     allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
                     
                 print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
                     
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
+                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Side.h5', allActs)
         
     
