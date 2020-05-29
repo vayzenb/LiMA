@@ -28,7 +28,7 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel_Side', 'Bulge_Side']
+SF = ['Skel', 'Bulge']
 modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
 #modelType = ['FF_SN', 'FF_IN', ]
 
@@ -95,13 +95,13 @@ for mm in range(0, len(modelType)):
             for sf in SF:
                 allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
                 for ff in range(0, frames):
-                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
+                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'_tex.jpg')
                     IM = IM.cuda()
                     vec = model(IM).cpu().detach().numpy() #Extract image vector
                     allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
                     
                 print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
                     
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Side.h5', allActs)
+                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_tex.h5', allActs)
         
     

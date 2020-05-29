@@ -23,7 +23,7 @@ tex = im2double(imread('checker.jpg'));
         IM3 = IM2 + tex2; %Add texture to the original image by adding it
         
 
-        imwrite(IM3, ['Frames\', imFiles(kk).name(1:end-3), '_tex.jpg']);
+        imwrite(IM3, ['Frames\', imFiles(kk).name(1:end-4), '_tex.jpg']);
     end
 
     
