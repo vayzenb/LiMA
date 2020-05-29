@@ -11,8 +11,9 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge']
+SF = ['Skel_Side', 'Bulge_Side']
 cond = ['', '_Size20']
+cond = ['_Side']
 
 #mat = spio.loadmat('GBJ_Acts/Figure_23_Bulge_GBJActs.mat', squeeze_me=True)
 

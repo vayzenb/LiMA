@@ -26,8 +26,9 @@ exp = ['Exp1', 'Exp2']
 
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
         ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
+
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
-modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
+#modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
 
 IMsize = str(20)
 manip = 'Side'

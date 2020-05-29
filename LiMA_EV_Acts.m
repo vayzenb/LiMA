@@ -13,7 +13,7 @@ cond = {'SF', 'Size'};
 stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge'}};
 
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
-SF = {'Skel', 'Bulge'};
+SF = {'Skel_Side', 'Bulge_Side'};
 
 imScale = .2;
 imTrans = .2;
@@ -58,22 +58,22 @@ for ee = 1:length(exp)
 
 				%Extract Gabor Magnitudes
 				ogGBJ = GWTWgrid_Simple(ogIM, 0, 1);
-				sizeGBJ = GWTWgrid_Simple(sizeIM, 0, 1);
+				%sizeGBJ = GWTWgrid_Simple(sizeIM, 0, 1);
 
 				stimActs_GBJ(fn,:) = ogGBJ(:)';
-				sizeActs_GBJ(fn,:) = sizeGBJ(:)';
+				%sizeActs_GBJ(fn,:) = sizeGBJ(:)';
 
 				%Extract GIST Magnitudes
 				stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
-				sizeActs_GIST(fn, :) = LMgist(sizeIM, '', param);
+				%sizeActs_GIST(fn, :) = LMgist(sizeIM, '', param);
 
             end
             %Save out activations
-            save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
-			save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts_Size', int2str(imScale*100)], 'sizeActs_GBJ');
+            save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts_Side'], 'stimActs_GBJ');
+			%save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts_Size', int2str(imScale*100)], 'sizeActs_GBJ');
             
-            save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
-			save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts_Size', int2str(imScale*100)], 'sizeActs_GIST');
+            save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts_Side'], 'stimActs_GIST');
+			%save(['EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts_Size', int2str(imScale*100)], 'sizeActs_GIST');
             
             
                 
