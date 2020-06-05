@@ -23,9 +23,6 @@ sAx = 8
 sTitle = 10
 sPlot = 2.5
 
-allCondNums = c(8, 2, 14, 9, 3, 15, 10, 4, 16, 11, 5, 17, 12, 6, 18, 13, 7, 19, 1)
-colNums = c(1,7, 2, 8, 3, 9,4,10,5,11,6,12) 
-
 
 ModelCols = c('#39a055', '#8ccf8a', '#c81b1d', '#ec3f2f', '#fa7051', '#fc9e80')
 
@@ -51,7 +48,7 @@ Exp1.SF = Exp1.Models[Exp1.Models$Condition == 'SF' & Exp1.Models$Classifier == 
 
 ggplot(Exp1.SF, aes(x = Model, y= Acc, fill = Model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
   geom_linerange(aes(ymin =Exp1.SF$CI_Low, ymax=Exp1.SF$CI_High, x = Model), size = sLine) +
-  scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
+  scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
   xlab("Models") + ylab("Categorization Accuracy") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                              axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
                                                                              axis.title.x = element_blank(), 
@@ -103,7 +100,7 @@ Exp2.SF = Exp2.Models[Exp2.Models$Condition == 'SF' & Exp2.Models$Classifier == 
 
 ggplot(Exp2.SF, aes(x = Model, y= Acc, fill = Model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
   geom_linerange(aes(ymin =Exp2.SF$CI_Low, ymax=Exp2.SF$CI_High, x = Model), size = sLine) +
-  scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
+  scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
   xlab("Models") + ylab("Categorization Accuracy") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                              axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
                                                                              axis.title.x = element_blank(), 
@@ -149,9 +146,10 @@ ggsave(filename =  'Infant_Data/Figures/Exp2_models_Controls.png', plot = last_p
 
 #INFANT PLOTS
 
-ggplot(Exp1.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "Gray85", width = .5, size = sLine) + 
+ggplot(Exp1.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "#32759b", width = .5, size = sLine) + 
   geom_linerange(ymin = Exp1.summary$Fixation - Exp1.summary$SE, ymax =Exp1.summary$Fixation + Exp1.summary$SE, size = sLine) +
   xlab("Trial Type") + ylab("Mean Looking Time (s)") + scale_y_continuous(breaks = seq(0, 12, by = 2), limits=c(0,12), expand = c(0,0)) +
+  scale_x_discrete(breaks=c("First 4","Last 4","Familiar", "Novel"), labels=c("First 4","Last 4","Same", "Different")) +
   theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                           axis.text.x = element_text(size=sAx, color = "black"),  
                           axis.title.x = element_blank(), 
@@ -161,7 +159,7 @@ ggplot(Exp1.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black
                           axis.ticks.length = unit(.09, "cm"))
 
 
-ggsave(filename =  'Figures/LiMA - Exp1_Diss.png', plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
+ggsave(filename =  'Infant_Data/Figures/LiMA - Exp1.png', plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
 
 
 Exp1.ratio = data.frame(Subj = AllSubs.Exp1$Subj, Ratio = AllSubs.Exp1$Ratio-.5)
@@ -176,9 +174,10 @@ ggplot(Exp1.ratio, aes(x = reorder(Subj, Ratio), y = Ratio)) +  geom_col(color =
 
 ggsave(filename =  'P:/Manuscripts/LiMA/Figures/LiMA - Exp1_Hist.png', plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
 
-ggplot(Exp2.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "Gray85", width = .5, size = sLine) + 
+ggplot(Exp2.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "#32759b", width = .5, size = sLine) + 
   geom_linerange(ymin = Exp2.summary$Fixation - Exp2.summary$SE, ymax =Exp2.summary$Fixation + Exp2.summary$SE, size = sLine) +
   xlab("Trial Type") + ylab("Mean Looking Time (s)") + scale_y_continuous(breaks = seq(0, 12, by = 2), limits=c(0,12), expand = c(0,0)) +
+  scale_x_discrete(breaks=c("First 4","Last 4","Familiar", "Novel"), labels=c("First 4","Last 4","Same", "Different")) +
   theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                           axis.text.x = element_text(size=sAx, color = "black"),  
                           axis.title.x = element_blank(), 
@@ -188,7 +187,7 @@ ggplot(Exp2.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black
                           axis.ticks.length = unit(.09, "cm"))
 
 
-ggsave(filename =  'Figures/LiMA - Exp2_Diss.png', plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
+ggsave(filename =  'Infant_Data/Figures/LiMA - Exp2.png', plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
 
 
 Exp2.ratio = data.frame(Subj = AllSubs.Exp2$Subj, Ratio = AllSubs.Exp2$Ratio-.5)
