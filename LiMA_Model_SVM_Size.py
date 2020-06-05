@@ -31,13 +31,13 @@ modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
 
 IMsize = str(20)
-manip = 'tex'
+manip = 'Size19'
 
 frames= 300
 labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
 #labels = list(chain(*labels))
 
-folK = 10
+folK = 5
 
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
