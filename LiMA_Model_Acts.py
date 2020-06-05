@@ -52,10 +52,10 @@ for mm in range(0, len(modelType)):
         #select model to run
     if modelType[mm] == 'FF_IN':
         model = torchvision.models.alexnet(pretrained=True)
-        #new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
-        #model.classifier = new_classifier #replace model classifier with stripped version
-        layer = "fc8"
-        actNum = 1000
+        new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        model.classifier = new_classifier #replace model classifier with stripped version
+        layer = "fc7"
+        actNum = 4096
         
     elif modelType[mm] == 'R_IN':
         model = torchvision.models.resnet50(pretrained=True)
@@ -68,11 +68,11 @@ for mm in range(0, len(modelType)):
         #model.features = torch.nn.DataParallel(model.features)
         checkpoint = torch.load('ShapeNet_AlexNet_Weights.pth.tar')
         model.load_state_dict(checkpoint)
-        #new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
-        #model.classifier = new_classifier #replace model classifier with stripped version
+        new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        model.classifier = new_classifier #replace model classifier with stripped version
         #model.to(device)
-        layer = "fc8"
-        actNum = 1000
+        layer = "fc7"
+        actNum = 4096
         
     elif modelType[mm] == 'R_SN':
         model = torchvision.models.resnet50(pretrained=False)
@@ -95,13 +95,13 @@ for mm in range(0, len(modelType)):
             for sf in SF:
                 allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
                 for ff in range(0, frames):
-                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'_tex.jpg')
+                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
                     IM = IM.cuda()
                     vec = model(IM).cpu().detach().numpy() #Extract image vector
                     allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
                     
                 print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
                     
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_tex.h5', allActs)
+                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
         
     
