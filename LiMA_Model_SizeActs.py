@@ -7,7 +7,7 @@ Created on Sun Mar 15 10:28:07 2020
 @author: vayze
 """
 import os
-#os.chdir('C:/Users/vayze/Desktop/GitHub Repos/LiMA/')
+#os.chdir('C:/Users/vayze/Desktop/GitHub_Repos/LiMA/')
 
 import numpy as np
 import pandas as pd
@@ -26,7 +26,7 @@ import deepdish as dd
 
 
 
-IMscale = 1+.2
+IMscale = [.1, .2, .3, .4, .5]
 
 exp = ['Exp1', 'Exp2']
 
@@ -42,20 +42,20 @@ normalize = T.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 
 #Set image loader for model
-def image_loader(image_name):
+def image_loader(image_name, scale):
     """load image, returns cuda tensor"""
     ogIM = Image.open(image_name).convert("RGB")
     #Create gray background frame
     #scale background to X% of original image
-    newIM = Image.new('RGB', (np.round(int(ogIM.size[0]*IMscale)),np.round(int(ogIM.size[1]*IMscale))), (119, 119, 119))
+    newIM = Image.new('RGB', (np.round(int(ogIM.size[0]*scale)),np.round(int(ogIM.size[1]*scale))), (119, 119, 119))
     
     #Overlay image on new background
     newIM.paste(ogIM,((newIM.width - ogIM.width) // 2, (newIM.height - ogIM.height) // 2))
     #newIM.paste(ogIM,(0,0)) # this one moves it to the left
     
     #Resize newIM to ogIM size
-    newIM.resize(ogIM.size)
-    newIM.convert('RGB')
+    newIM = newIM.resize(ogIM.size)
+    newIM = newIM.convert('RGB')
     
     newIM = Variable(normalize(to_tensor(scaler(newIM))).unsqueeze(0))
     return newIM     
@@ -104,15 +104,16 @@ for mm in range(0, len(modelType)):
     for ee in range(0,len(exp)):
         allActs = {}
         
-        for ss in range(0,len(skel[ee])):
-            for sf in SF:
-                allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
-                for ff in range(0, frames):
-                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
-                    IM = IM.cuda()
-                    vec = model(IM).cpu().detach().numpy() #Extract image vector
-                    allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
-                    
-                print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
-                    
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Size' + str(int((IMscale-1)*100))+ '.h5', allActs)
+        for sz in IMscale:
+            for ss in range(0,len(skel[ee])):
+                for sf in SF:
+                    allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
+                    for ff in range(0, frames):
+                        IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg', (sz+1))
+                        IM = IM.cuda()
+                        vec = model(IM).cpu().detach().numpy() #Extract image vector
+                        allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
+                        
+                    print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf + ' ' + str(int(sz*100)))
+                        
+                    dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_Size' + str(int(sz*100)) + '.h5', allActs)

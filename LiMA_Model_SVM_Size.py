@@ -27,11 +27,13 @@ exp = ['Exp1', 'Exp2']
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
         ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
 
-modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
-#modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
 
-IMsize = str(20)
-manip = 'Size20'
+
+modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
+modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
+
+IMsize = str(14)
+manip = 'Size50'
 
 frames= 300
 labels = [np.repeat(1, frames).tolist(), np.repeat(2, frames).tolist()]
@@ -55,8 +57,11 @@ for ee in range(0,len(exp)):
         allActsTest = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_' + manip +'.h5')
         for sTR in range(0,len(stim[ee])):
             for sTE in range(0,len(stim[ee])):
+                if stim[ee][sTR][-4] != stim[ee][sTE][-4]: continue
+            
                 trainAcc = 0
                 testAcc = 0
+                
                 for fl in range(0,folK):
                     #instantiate SVM everytime
                     #instantiate SVM everytime
