@@ -49,7 +49,7 @@ for cc in cond:
                 
 
             print(modelType[mm])
-            dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts' + cc + '.h5', allActs)
+            dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_' + cc + '.h5', allActs)
             
                     
 

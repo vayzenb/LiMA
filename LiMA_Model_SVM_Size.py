@@ -30,7 +30,7 @@ stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
 
 
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
-modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
+#modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN']
 
 
 manip = ['Size10', 'Size20', 'Size30', 'Size40', 'Size50']
@@ -47,15 +47,17 @@ folK = 10
 
 
 for ee in range(0,len(exp)):
-    n = 0
-    CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,10), dtype = object)
-    
-    for mm in range(0, len(modelType)):      
-        
-        
-        allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
-        
-        for sz in manip:
+
+
+    for sz in manip:    
+        n = 0
+        CNN_Acc = np.empty(((len(stim[ee]) * len(stim[ee])*len(modelType))*10,10), dtype = object)
+        for mm in range(0, len(modelType)):      
+            
+            
+            allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
+            
+            
             allActsTest = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts_' + sz +'.h5')
             for sTR in range(0,len(stim[ee])):
                 for sTE in range(0,len(stim[ee])):
