@@ -12,7 +12,7 @@ exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
-cond = ['', '_Size20']
+cond = ['Size10', 'Size20', 'Size30', 'Size40', 'Size50']
 #cond = ['_Side']
 
 #mat = spio.loadmat('GBJ_Acts/Figure_23_Bulge_GBJActs.mat', squeeze_me=True)
@@ -40,12 +40,10 @@ for cc in cond:
                 for sf in SF:
                     
                     
-                    mat = spio.loadmat('Activations/EV_Acts/Figure_' + skel[ee][ss] + '_' + sf + '_' + modelType[mm] + '_Acts' + cc + '.mat', squeeze_me=True)
+                    mat = spio.loadmat('Activations/EV_Acts/Figure_' + skel[ee][ss] + '_' + sf + '_' + modelType[mm] + '_Acts_' + cc + '.mat', squeeze_me=True)
                     
-                    if cc == '_Size20':
-                        matName = 'sizeActs_' + modelType[mm]
-                    else:
-                        matName = 'stimActs_' + modelType[mm]
+                    
+                    matName = 'sizeActs_' + modelType[mm]
                         
                     allActs['Figure_' + skel[ee][ss] +'_' + sf] = mat[matName]
                 
