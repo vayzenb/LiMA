@@ -8,7 +8,7 @@ library(boot)
 setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
-cond = c('View', 'SF', 'Size')
+cond = c('View', 'SF')
 ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
 classifier = c("OCS", "ISOF")
 
