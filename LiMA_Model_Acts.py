@@ -12,9 +12,6 @@ import os
 
 import numpy as np
 import pandas as pd
-import itertools
-import glob
-import random
 import torch
 import torch.nn as nn
 import torchvision
@@ -28,7 +25,7 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge']
+SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
 modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
 #modelType = ['FF_SN', 'FF_IN', ]
 
@@ -87,6 +84,7 @@ for mm in range(0, len(modelType)):
     model.cuda()
     model.eval() #Set model into evaluation mode
         
+    
     #Loop through the experimental conditions
     for ee in range(0,len(exp)):
         allActs = {}
@@ -95,7 +93,7 @@ for mm in range(0, len(modelType)):
             for sf in SF:
                 allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
                 for ff in range(0, frames):
-                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
+                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
                     IM = IM.cuda()
                     vec = model(IM).cpu().detach().numpy() #Extract image vector
                     allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))

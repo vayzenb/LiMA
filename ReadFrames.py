@@ -15,21 +15,23 @@ vids = os.listdir("Videos/")
 
 
 for ii in range(0,len(vids)):
+    print(vids[ii])
     vidcap = cv2.VideoCapture('Videos/' + vids[ii])
     vidFile = vids[ii][:-4]
+    os.mkdir("Frames/"+ vidFile)
     success,image = vidcap.read()
     count = 1
     success = True
-    while success:
-      cv2.imwrite("Frames/" + vidFile + "_" + str(count) + ".jpg", image)     # save frame as JPEG file
+    while success:    
+      cv2.imwrite("Frames/" + vidFile + "/" + vidFile + "_" + str(count) + ".jpg", image)     # save frame as JPEG file
       success,image = vidcap.read()
-      print('Read a new frame: ', success)
       count += 1
       
-frames = os.listdir("Frames/")
+    frames = os.listdir("Frames/" + vidFile + "/")
 
-for ii in range(0,len(frames)):
-    IM = Image.open("Frames/" + frames[ii]).convert("RGB")
-    IM = IM.crop((370, 100, 1070, 800)) 
-    IM.save("Frames/" + frames[ii])
+    for ii in range(0,len(frames)):
+        IM = Image.open("Frames/" + vidFile + "/" + frames[ii]).convert("RGB")
+        IM = IM.crop((370, 100, 1070, 800)) 
+        IM.save("Frames/" + vidFile + "/"  + frames[ii])
     
+      

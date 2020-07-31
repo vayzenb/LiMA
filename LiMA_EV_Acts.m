@@ -6,6 +6,7 @@
 
 clear all;
 
+addpath('gistdescriptor/')  
 
 exp = {'Exp1', 'Exp2'};
 cond = {'SF', 'Size'};
@@ -13,7 +14,7 @@ cond = {'SF', 'Size'};
 stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge'}};
 
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
-SF = {'Skel', 'Bulge'};
+SF = {'Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'};
 
 imScale = [.1, .2, .3, .4, .5];
 imTrans = .2;
@@ -45,7 +46,8 @@ for ee = 1:length(exp)
                 for fn = 1:frames
 
                     %Load original image
-                    ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, '_', int2str(fn), '.jpg']);
+                    ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, ...
+                        '/Figure_', skel{ee}{sk},'_',SF{sf},'_', int2str(fn), '.jpg']);
                     sizeIM = zeros(round(size(ogIM,1)*(imScale(sz)+1)), round(size(ogIM,1)*(imScale(sz)+1)),3,'uint8');
                     sizeIM(:,:,1) = 119;
                     sizeIM(:,:,2) = 119;
@@ -75,17 +77,18 @@ for ee = 1:length(exp)
 
                 end
                 %Save out activations
-                %save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
+                save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts_Size', int2str(imScale(sz)*100)], 'sizeActs_GBJ');
 
-                %save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
+                save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts_Size', int2str(imScale(sz)*100)], 'sizeActs_GIST');
 
 
 
-
+                skel{ee}{sk}
+                SF{sf}
             end
-            skel{ee}
+            
         end
 
     end
