@@ -65,15 +65,15 @@ for ee = 1:length(exp)
                     sizeIM = imresize(sizeIM, [256,256]);
 
                     %Extract Gabor Magnitudes
-                    %ogGBJ = GWTWgrid_Simple(ogIM, 0, 1);
-                    sizeGBJ = GWTWgrid_Simple(sizeIM, 0, 1);
+                    ogGBJ = GWTWgrid_Simple(ogIM, 0, 1);
+                    %sizeGBJ = GWTWgrid_Simple(sizeIM, 0, 1);
 
-                    %stimActs_GBJ(fn,:) = ogGBJ(:)';
-                    sizeActs_GBJ(fn,:) = sizeGBJ(:)';
+                    stimActs_GBJ(fn,:) = ogGBJ(:)';
+                    %sizeActs_GBJ(fn,:) = sizeGBJ(:)';
 
                     %Extract GIST Magnitudes
-                    %stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
-                    sizeActs_GIST(fn, :) = LMgist(sizeIM, '', param);
+                    stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
+                    %sizeActs_GIST(fn, :) = LMgist(sizeIM, '', param);
 
                 end
                 %Save out activations
