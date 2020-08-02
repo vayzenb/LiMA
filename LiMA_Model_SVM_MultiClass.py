@@ -28,7 +28,7 @@ total_frames= 300
 train_frames = 240
 test_frames = total_frames - train_frames
 
-folK = 2
+folK = 10
 
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
