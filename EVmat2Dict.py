@@ -11,7 +11,7 @@ import deepdish as dd
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
-SF = ['Skel', 'Bulge']
+SF = ['Skel', 'Bulge', 'Balloon','Shrink', 'Wave']
 cond = ['Size10', 'Size20', 'Size30', 'Size40', 'Size50']
 cond = ['']
 

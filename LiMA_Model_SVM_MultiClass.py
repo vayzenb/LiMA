@@ -20,6 +20,7 @@ exp = ['Exp1', 'Exp2']
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 
 
+
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon','Shrink', 'Wave']
 testSF = ['Skel', 'Bulge']
@@ -114,17 +115,15 @@ for ee in range(0,len(exp)):
                             skelType = 'Diff'
                                     
                         CNN_Acc[n,4] = skelType
-                        CNN_Acc[n,5] = trainAcc_ocs
-                        CNN_Acc[n,6] = testAcc_ocs
-                        #CNN_Acc[n,8] = trainAcc_cov
-                        #CNN_Acc[n,9] = testAcc_cov
-                        CNN_Acc[n,7] = trainAcc_isof
-                        CNN_Acc[n,8] = testAcc_isof
-                        #CNN_Acc[n,12] = trainAcc_lof
-                        #CNN_Acc[n,13] = testAcc_lof
+                        CNN_Acc[n,5] = tSF
+                        CNN_Acc[n,6] = trainAcc_ocs
+                        CNN_Acc[n,7] = testAcc_ocs
+                        CNN_Acc[n,8] = trainAcc_isof
+                        CNN_Acc[n,9] = testAcc_isof
+
 
                         
-                        print(exp[ee], modelType[mm], skel[ee][sTR],skel[ee][sTE], skelType,tSF, CNN_Acc[n,6], CNN_Acc[n,8])
+                        print(exp[ee], modelType[mm], skel[ee][sTR],skel[ee][sTE], skelType,tSF, CNN_Acc[n,7], CNN_Acc[n,9])
                         
                         n = n +1
                     
