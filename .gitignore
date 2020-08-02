@@ -4,3 +4,6 @@
 #Ignore weights file
 ShapeNet_ResNet50_Weights.pth.tar
 ShapeNet_AlexNet_Weights.pth.tar
+
+#Ignore acitvations
+Activations/
