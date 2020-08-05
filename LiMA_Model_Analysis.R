@@ -16,7 +16,7 @@ ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_
 
 sz = 20
 
-iter = 10000
+iter = 1000
 
 alpha = .05
 for (ee in 1:length(exp)){
@@ -25,10 +25,7 @@ for (ee in 1:length(exp)){
   df.sf = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers.csv", sep=""),header = FALSE, sep=",")
   df.sf$Cond = "SF"
   
-  df.sz = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers_Size", sz,".csv", sep=""),header = FALSE, sep=",")
-  df.sz$Cond = "Size"
-  
-  df = rbind(df.sf, df.sz)
+  df = df.sf
   colnames(df) = ModelCols
   
   #Create coded score for different skeleton objects (e.g., a 0 cat accuracy is actually 100% correct)
@@ -40,10 +37,10 @@ for (ee in 1:length(exp)){
   
   
 
-  #set up empty matrices for each condition and classifier (the number of rows corresponds to the model)
+  #set up empty matrices for each condition (2) and classifier(2)  (the number of rows in matrix corresponds to the model)
   bootMat.infant = matrix(0,1,iter)
-  bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),
-                       matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter))
+  bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),
+                       matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter))
   
   #Start boot test
   for (ii in 1:iter){
@@ -83,12 +80,13 @@ for (ee in 1:length(exp)){
     }
    }
     
-  
   }
   
   
   #Write to file
   ModelSummary = matrix(0,length(bootMat.model)*length(ModelType) +1,6)
+  
+  #This section comiles the summary data
   
   novelDiff = mean(df.infant$Novel) - mean(df.infant$HabEnd)
   famDiff = mean(df.infant$Familiar) - mean(df.infant$HabEnd)

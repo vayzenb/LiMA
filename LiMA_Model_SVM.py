@@ -25,11 +25,13 @@ modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 
 
 
-total_frames= 300
-train_frames = 240
-test_frames = total_frames - train_frames
 
-folK = 10
+total_frames= 300
+train_frames = 300
+test_frames = total_frames - train_frames
+test_frames = 300
+
+folK = 1
 
 #For single class SVM
 #Nu value is the proportion of outliers you expect (i.e., upper-bound on training data)
@@ -80,7 +82,8 @@ for ee in range(0,len(exp)):
                     #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
-                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(train_frames):total_frames],:]
+                    #X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(train_frames):total_frames],:]
+                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[0:total_frames],:]
                     
                     #Predict test data
                     ocs_test = ocs.predict(X_test)
@@ -140,5 +143,5 @@ for ee in range(0,len(exp)):
                 
                 
   
-        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllClassifiers.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllFrames.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
