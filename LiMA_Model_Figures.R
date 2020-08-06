@@ -124,15 +124,22 @@ for (ee in exp){
     ggplot(df.size, aes(x=Condition, y=Acc,fill = Model, color = Model, group = Model)) + 
       geom_line(size = sLine, position=position_dodge(.35)) + 
       geom_linerange(aes(ymin=df.size$CI_Low, ymax=df.size$CI_High, x= Condition, color = Model), 
-                     position=position_dodge(.35), size = .4) + 
+                     position=position_dodge(.35), size = sLine) + 
       geom_point(data = df.size, aes(fill = Model, color = Model),position=position_dodge(.35), size = 1.75) +
       scale_color_manual(values=ModelCols) + scale_fill_manual(values=ModelCols) +
       xlab("Size Difference (%)") + ylab("Categorization Accuracy") +
+
+      geom_hline(yintercept= .5, linetype="dashed") +
       theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
-                              axis.text.x = element_text(size=sAx, color = "black")) + geom_hline(yintercept= .5, linetype="dashed")
+                              axis.text.x = element_text(size=sAx, color = "black"),
+                              axis.title = element_text(size=sTitle),
+                              axis.line = element_line(size = sLine),
+                              axis.ticks= element_line(size = sLine, color = 'black'),
+                              legend.text = element_text(size=sAx, color = "black"),
+                              legend.title = element_text(size=sTitle, color = "black"))
       
       
-    ggsave(filename =  paste('Infant_Data/Figures/', ee, '_', cl,'_size.png', sep = ""), plot = last_plot(), dpi = 300,width =8, height = 4)
+    ggsave(filename =  paste('Infant_Data/Figures/', ee, '_', cl,'_size.png', sep = ""), plot = last_plot(), dpi = 300,width =4, height = 2.6)
 
   }
   
