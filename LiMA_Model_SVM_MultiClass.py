@@ -21,12 +21,13 @@ modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 
 
 
+
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon','Shrink', 'Wave']
 testSF = ['Skel', 'Bulge']
 
 total_frames= 300
-train_frames = 240
+train_frames = 148
 test_frames = total_frames - train_frames
 
 folK = 10
