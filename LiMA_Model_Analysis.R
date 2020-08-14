@@ -16,7 +16,7 @@ ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_
 
 sz = 20
 
-iter = 1000
+iter = 10000
 
 alpha = .05
 for (ee in 1:length(exp)){
