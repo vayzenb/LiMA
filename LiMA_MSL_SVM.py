@@ -130,5 +130,5 @@ for ee in range(0,len(exp)):
                     
                     
     
-            np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_MultiClass.csv', CNN_Acc, delimiter=',', fmt= '%s')
+            np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_MSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
             
