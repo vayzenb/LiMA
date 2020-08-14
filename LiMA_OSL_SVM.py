@@ -27,9 +27,9 @@ modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 
 
 total_frames= 300
-train_frames = 300
+train_frames = 150
 test_frames = total_frames - train_frames
-test_frames = 300
+
 
 folK = 10
 
