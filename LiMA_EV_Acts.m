@@ -16,6 +16,10 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'};
 
+#exp = {'Exp1'};
+#skel = {{'31_0'}};
+#SF = {'Skel'};
+
 imScale = [.1, .2, .3, .4, .5];
 imTrans = .2;
 frames = 300; %Number of frames
