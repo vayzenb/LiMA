@@ -82,8 +82,8 @@ for ee in range(0,len(exp)):
                     #trainAcc_lof = ((frames/2) - lof_Train[lof_Train == -1].size)/(frames/2)
                 
                     #Test on object, but left out frames
-                    #X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(train_frames):total_frames],:]
-                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[0:total_frames],:]
+                    X_test = allActs['Figure_' + stim[ee][sTE]][rN[int(train_frames):total_frames],:]
+                    #X_test = allActs['Figure_' + stim[ee][sTE]][rN[0:total_frames],:]
                     
                     #Predict test data
                     ocs_test = ocs.predict(X_test)
@@ -143,5 +143,5 @@ for ee in range(0,len(exp)):
                 
                 
   
-        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_AllFrames.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
             

@@ -22,7 +22,7 @@ alpha = .05
 for (ee in 1:length(exp)){
  #Load infant data
   df.infant = read.table(paste("Infant_Data/Experiment_",ee,"_Infant_Data.csv", sep=""),header = TRUE, sep=",")
-  df.sf = read.table(paste("Results/LiMA_Exp", ee,"_allModels_AllClassifiers.csv", sep=""),header = FALSE, sep=",")
+  df.sf = read.table(paste("Results/LiMA_Exp", ee,"_allModels_OSL.csv", sep=""),header = FALSE, sep=",")
   df.sf$Cond = "SF"
   
   df = df.sf
