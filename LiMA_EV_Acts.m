@@ -17,12 +17,6 @@ stim = {{'23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'}, {'
 skel = {{'23','31', '26'},{'31_0', '31_50'}};
 SF = {'Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave'};
 
-#exp = {'Exp1'};
-#skel = {{'31_0'}};
-#SF = {'Skel'};
-
-imScale = [.1, .2, .3, .4, .5];
-imTrans = .2;
 frames = 300; %Number of frames
 
 %% GIST Parameters:
@@ -37,15 +31,10 @@ for ee = 1:length(exp)
 	allData = {};
 	n=1;
 
-    for sz = 1:length(imScale);
-
         for sk = 1:length(skel{ee})
             for sf = 1:length(SF)
                 stimActs_GBJ = [];
-                sizeActs_GBJ = [];
                 stimActs_GIST = [];
-                sizeActs_GIST = [];
-
 
                 st = 1;
                 for fn = 1:frames
@@ -53,40 +42,28 @@ for ee = 1:length(exp)
                     %Load original image
                     ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, ...
                         '/Figure_', skel{ee}{sk},'_',SF{sf},'_', int2str(fn), '.jpg']);
-                    sizeIM = zeros(round(size(ogIM,1)*(imScale(sz)+1)), round(size(ogIM,1)*(imScale(sz)+1)),3,'uint8');
-                    sizeIM(:,:,1) = 119;
-                    sizeIM(:,:,2) = 119;
-                    sizeIM(:,:,3) = 119;
-                    %Overlay OG image on blank in top left corner
-                    %This reduces the size and shifts it by imScale %
-                    %sizeIM(1:size(ogIM,1), 1:size(ogIM,1), :) = ogIM;
-                    padSize = round(((size(ogIM,1)*(imScale(sz)+1))- size(ogIM,1))/2,0);
-
-                    %Resize images by 20%
-                    sizeIM = padarray(ogIM, [padSize, padSize], 119); %Pad with 119 (gray) by % size reduction
 
                     %Resize to GBJ input size
                     ogIM = imresize(ogIM, [256,256]);
-                    sizeIM = imresize(sizeIM, [256,256]);
+
 
                     %Extract Gabor Magnitudes
-                    ogGBJ = GWTWgrid_Simple(ogIM, 0, 1);
-                    %sizeGBJ = GWTWgrid_Simple(sizeIM, 0, 1);
+                    ogGBJ = GWTWgrid_Simple(ogIM, 1, 0);
+
 
                     stimActs_GBJ(fn,:) = ogGBJ(:)';
-                    %sizeActs_GBJ(fn,:) = sizeGBJ(:)';
+
 
                     %Extract GIST Magnitudes
                     stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
-                    %sizeActs_GIST(fn, :) = LMgist(sizeIM, '', param);
+
 
                 end
                 %Save out activations
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
-                save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts_Size', int2str(imScale(sz)*100)], 'sizeActs_GBJ');
-
+                
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
-                save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts_Size', int2str(imScale(sz)*100)], 'sizeActs_GIST');
+                
 
 
 
@@ -96,7 +73,6 @@ for ee = 1:length(exp)
             
         end
 
-    end
 end
 
 

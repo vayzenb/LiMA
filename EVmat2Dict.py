@@ -27,7 +27,7 @@ for cc in cond:
     
     for mm in range(0, len(modelType)):
         if modelType[mm] == 'GBJ':
-            actNum = 5760
+            actNum = 8000
             
         elif modelType[mm] == 'GIST':
             actNum = 512
