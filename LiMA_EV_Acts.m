@@ -45,7 +45,7 @@ for ee = 1:length(exp)
                     ogIM = imresize(ogIM, [256,256]);
                     
                     %Extract Gabor Magnitudes
-                    ogGBJ = GWTWgrid_Simple(ogIM, 0, 1);
+                    ogGBJ = GWTWgrid_Simple(ogIM, 0, 0);
          
                     stimActs_GBJ(fn,:) = ogGBJ(:)';
                     
