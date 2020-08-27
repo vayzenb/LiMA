@@ -36,12 +36,16 @@ for ee = 1:length(exp)
                 stimActs_GBJ = [];
                 stimActs_GIST = [];
 
+<<<<<<< HEAD
                 st = 1;
+=======
+>>>>>>> lima_rerun
                 for fn = 1:frames
 
                     %Load original image
                     ogIM = imread(['Frames/Figure_', skel{ee}{sk},'_',SF{sf}, ...
                         '/Figure_', skel{ee}{sk},'_',SF{sf},'_', int2str(fn), '.jpg']);
+<<<<<<< HEAD
 
                     %Resize to GBJ input size
                     ogIM = imresize(ogIM, [256,256]);
@@ -57,15 +61,34 @@ for ee = 1:length(exp)
                     %Extract GIST Magnitudes
                     stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
 
+=======
+                    
+                    %Resize to GBJ input size
+                    ogIM = imresize(ogIM, [256,256]);
+                    
+                    %Extract Gabor Magnitudes
+                    ogGBJ = GWTWgrid_Simple(ogIM, 0, 0);
+         
+                    stimActs_GBJ(fn,:) = ogGBJ(:)';
+                    
+
+                    %Extract GIST Magnitudes
+                    stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
+>>>>>>> lima_rerun
 
                 end
                 %Save out activations
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
+<<<<<<< HEAD
                 
                 save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
                 
 
 
+=======
+
+                save(['Activations/EV_Acts/Figure_', skel{ee}{sk},'_',SF{sf}, '_GIST_Acts'], 'stimActs_GIST');
+>>>>>>> lima_rerun
 
                 skel{ee}{sk}
                 SF{sf}

@@ -18,7 +18,7 @@ iter = 10000
 alpha = .05
 for (ee in 1:length(exp)){
   #Load infant data
-  df = read.table(paste("Results/LiMA_Exp", ee,"_allModels_multiClass.csv", sep=""),header = FALSE, sep=",")
+  df = read.table(paste("Results/LiMA_Exp", ee,"_allModels_MSL.csv", sep=""),header = FALSE, sep=",")
   
   
   
