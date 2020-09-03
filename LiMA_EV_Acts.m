@@ -49,12 +49,12 @@ for ee = 1:length(exp)
 
                     %Extract Gabor Magnitudes
                     ogGBJ = GWTWgrid_Simple(ogIM, 1, 0);
-
-
+         
                     stimActs_GBJ(fn,:) = ogGBJ(:)';
 
 
                     %Extract GIST Magnitudes
+                    
                     stimActs_GIST(fn,:) = LMgist(ogIM, '', param);
 
 
