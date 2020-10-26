@@ -22,9 +22,7 @@ for (mm in 1:length(ModelType)){
   
   Exp1.Models_MSL[,1][Exp1.Models_MSL[,1] == ModelType[mm]] = ActualName[mm]
   Exp2.Models_MSL[,1][Exp2.Models_MSL[,1] == ModelType[mm]] = ActualName[mm]
-  
-  Exp1.Models_Size[,1][Exp1.Models_Size[,1] == ModelType[mm]] = ActualName[mm]
-  Exp2.Models_Size[,1][Exp2.Models_Size[,1] == ModelType[mm]] = ActualName[mm]
+
   
 }
 
@@ -49,8 +47,7 @@ for (ee in exp){
     
     #Make figure for different SF
     df.SF = df[df$Condition == 'SF' & df$Classifier == cl | df$Classifier == "Infant",]
-    
-    #write.csv(df.SF,paste("Infant_Data/", ee, '_Table_', cl, '_SF.csv', sep = ""), row.names = FALSE)
+   
     
     ggplot(df.SF, aes(x = Model, y= Acc, fill = Model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
       geom_linerange(aes(ymin =df.SF$CI_Low, ymax=df.SF$CI_High, x = Model), size = sLine) +
@@ -87,6 +84,8 @@ for (ee in exp){
     ggsave(filename =  paste('Infant_Data/Figures/', ee, '_', cl,'_view.png', sep = ""), plot = last_plot(), dpi = 300,width =3, height = 3)
     
     
+    #SF one-class learning figure
+    
     #Multi-class learning figure 
     df = as.data.frame(eval(as.name(paste(ee, '.Models_MSL', sep=""))))
     df = df[df$Classifier == cl,]
@@ -112,34 +111,6 @@ for (ee in exp){
     ggsave(filename =  paste('Infant_Data/Figures/', ee, '_', cl,'_MSL.png', sep = ""), plot = last_plot(), dpi = 300,width =3, height = 3)
     
     
-    
-    #Size line graph
-    df = as.data.frame(eval(as.name(paste(ee, '.Models_Size', sep=""))))
-    df$Model = factor(df$Model, levels = c('GBJ', 'GIST', 'AlexNet-IN', 'ResNet-IN', 'AlexNet-SIN', 'ResNet-SIN'))
-    df.size = df[df$Classifier == cl,]
-    df.size$Acc = as.numeric(as.character(df.size$Acc))
-    df.size$CI_Low = as.numeric(as.character(df.size$CI_Low))
-    df.size$CI_High = as.numeric(as.character(df.size$CI_High))
-    
-    ggplot(df.size, aes(x=Condition, y=Acc,fill = Model, color = Model, group = Model)) + 
-      geom_line(size = sLine, position=position_dodge(.35)) + 
-      geom_linerange(aes(ymin=df.size$CI_Low, ymax=df.size$CI_High, x= Condition, color = Model), 
-                     position=position_dodge(.35), size = sLine) + 
-      geom_point(data = df.size, aes(fill = Model, color = Model),position=position_dodge(.35), size = 1.75) +
-      scale_color_manual(values=ModelCols) + scale_fill_manual(values=ModelCols) +
-      xlab("Size Difference (%)") + ylab("Categorization Accuracy") +
-
-      geom_hline(yintercept= .5, linetype="dashed") +
-      theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
-                              axis.text.x = element_text(size=sAx, color = "black"),
-                              axis.title = element_text(size=sTitle),
-                              axis.line = element_line(size = sLine),
-                              axis.ticks= element_line(size = sLine, color = 'black'),
-                              legend.text = element_text(size=sAx, color = "black"),
-                              legend.title = element_text(size=sTitle, color = "black"))
-      
-      
-    ggsave(filename =  paste('Infant_Data/Figures/', ee, '_', cl,'_size.png', sep = ""), plot = last_plot(), dpi = 300,width =4, height = 2.6)
 
   }
   

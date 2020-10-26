@@ -8,7 +8,7 @@ library(boot)
 setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
-cond = c('View', 'SF')
+cond = c('View', 'SF', 'Skel')
 ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
 classifier = c("OCS", "ISOF")
 
@@ -25,22 +25,30 @@ for (ee in 1:length(exp)){
   df.sf = read.table(paste("Results/LiMA_Exp", ee,"_allModels_OSL.csv", sep=""),header = FALSE, sep=",")
   df.sf$Cond = "SF"
   
+  
   df = df.sf
   colnames(df) = ModelCols
   
-  #Create coded score for different skeleton objects (e.g., a 0 cat accuracy is actually 100% correct)
+  #This codes objects with same skel at 1 and objects with diff skels as 0
   df$OCS = df$tsAcc_ocs
   df$OCS[df$Skel == 'Diff'] = 1-df$OCS[df$Skel == 'Diff']
   
   df$ISOF = df$tsAcc_isof
   df$ISOF[df$Skel == 'Diff'] = 1-df$ISOF[df$Skel == 'Diff']
   
+  #This codes objects with same SF at 1 and objects with diff SFs as 0
+  df$OCS_SF = df$tsAcc_ocs
+  df$OCS_SF[df$SF == 'Diff'] = 1-df$OCS_SF[df$SF == 'Diff']
+  
+  df$ISOF_SF = df$tsAcc_isof
+  df$ISOF_SF[df$SF == 'Diff'] = 1-df$ISOF_SF[df$SF == 'Diff']
+  
   
 
-  #set up empty matrices for each condition (2) and classifier(2)  (the number of rows in matrix corresponds to the model)
+  #set up empty matrices for each condition (3) and classifier(2)  (the number of rows in matrix corresponds to the model)
   bootMat.infant = matrix(0,1,iter)
-  bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),
-                       matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter))
+  bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),matrix(0,length(ModelType),iter),
+                       matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter))
   
   #Start boot test
   for (ii in 1:iter){
@@ -65,15 +73,20 @@ for (ee in 1:length(exp)){
       }else if (cc == 'SF' )  {
         tempMAT = df[df$Model == ModelType[mm] & df$SF == "Diff" & df$Cond == "SF",]
        
-      }else if (cc == "Size") {
-        tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "Size",]
+      }else if (cc == "Skel") {
+        tempMAT = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$Cond == "SF",]
       }
        
        #Sample with replacement
        tempMAT = sample_n(tempMAT,nrow(tempMAT), replace = TRUE)
        #Add to appropriate matrix
+       if (cc == 'SF' | cc == 'View')  {
        bootMat.model[[n]][mm,ii] = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
                                       mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+       }else if (cc == "Skel") {
+         bootMat.model[[n]][mm,ii] = (mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Same"], na.rm = TRUE) +
+                                        mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Diff"], na.rm = TRUE))/2
+       }
        
      }
       n= n +1
@@ -106,12 +119,20 @@ for (ee in 1:length(exp)){
         }else if (cc == 'SF' )  {
           tempMAT = df[df$Model == ModelType[mm] & df$SF == "Diff" & df$Cond == "SF",]
           
-        }else if (cc == "Size") {
-          tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "Size",]
+        }else if (cc == "Skel") {
+          tempMAT = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$Cond == "SF",]
         }
         
-        tempMean = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
-                      mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+        if (cc == 'SF' | cc == 'View')  {
+          tempMean = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
+                                         mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+        }else if (cc == "Skel") {
+          tempMean = (mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Same"], na.rm = TRUE) +
+                                         mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Diff"], na.rm = TRUE))/2
+        }
+          
+        #tempMean = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
+         #             mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
         
         CI = quantile(bootMat.model[[n]][mm,], probs = c(alpha/2, 1-alpha/2));
         ModelSummary[ms,] = c(ModelType[mm], cl, cc, tempMean,CI[1],CI[2])
