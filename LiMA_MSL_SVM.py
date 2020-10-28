@@ -19,9 +19,6 @@ exp = ['Exp1', 'Exp2']
 
 modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
 
-
-
-
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon','Shrink', 'Wave']
 testSF = ['Skel', 'Bulge']
