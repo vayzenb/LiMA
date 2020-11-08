@@ -21,13 +21,14 @@ from torch.autograd import Variable
 from PIL import Image
 from itertools import chain
 import deepdish as dd
+import cornet
 
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
-modelType = ['FF_SN', 'R_SN', 'FF_IN', 'R_IN']
-#modelType = ['FF_SN', 'FF_IN', ]
+modelType = ['CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN']
+modelType = ['CorNet_Z', 'CorNet_S']
 
 
 frames = 300
@@ -44,23 +45,29 @@ def image_loader(image_name):
     
     return image     
 
+#Gets feats for CorNet models
+def _store_feats(layer, inp, output):
+    """An ugly but effective way of accessing intermediate model features
+    """   
+    output = output.cpu().detach().numpy()
+    _model_feats.append(np.reshape(output, (len(output), -1)))
 
 for mm in range(0, len(modelType)):
         #select model to run
-    if modelType[mm] == 'FF_IN':
+    if modelType[mm] == 'AlexNet_IN':
         model = torchvision.models.alexnet(pretrained=True)
         new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
         model.classifier = new_classifier #replace model classifier with stripped version
         layer = "fc7"
         actNum = 4096
         
-    elif modelType[mm] == 'R_IN':
+    elif modelType[mm] == 'ResNet_IN':
         model = torchvision.models.resnet50(pretrained=True)
         model = nn.Sequential(*list(model.children())[:-1])
         layer = "avgpool"
         actNum = 2048
                 
-    elif modelType[mm] == 'FF_SN':
+    elif modelType[mm] == 'AlexNet_SN':
         model = torchvision.models.alexnet(pretrained=False)
         #model.features = torch.nn.DataParallel(model.features)
         checkpoint = torch.load('ShapeNet_AlexNet_Weights.pth.tar')
@@ -71,7 +78,7 @@ for mm in range(0, len(modelType)):
         layer = "fc7"
         actNum = 4096
         
-    elif modelType[mm] == 'R_SN':
+    elif modelType[mm] == 'ResNet_SN':
         model = torchvision.models.resnet50(pretrained=False)
         #model = torch.nn.DataParallel(model.features)
         checkpoint = torch.load('ShapeNet_ResNet50_Weights.pth.tar')
@@ -81,25 +88,62 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
     
+    elif modelType[mm] == 'CorNet_Z':
+        model = getattr(cornet, 'cornet_z')
+        model = model(pretrained=False, map_location='gpu')
+        
+        layer = "avgpool"
+        actNum = 512
+    
+        try:
+            m = model.module
+        except:
+            m = model
+        model_layer = getattr(getattr(m, 'decoder'), layer)
+        model_layer.register_forward_hook(_store_feats)
+
+    elif modelType[mm] == 'CorNet_S':
+        model = getattr(cornet, 'cornet_s')
+        model = model(pretrained=False, map_location='gpu')
+        
+        layer = "avgpool"
+        actNum = 512        
+
+        try:
+            m = model.module
+        except:
+            m = model
+        
+        model_layer = getattr(getattr(m, 'decoder'), layer)
+        model_layer.register_forward_hook(_store_feats)
+    
+
     model.cuda()
     model.eval() #Set model into evaluation mode
         
-    
-    #Loop through the experimental conditions
-    for ee in range(0,len(exp)):
-        allActs = {}
-        
-        for ss in range(0,len(skel[ee])):
-            for sf in SF:
-                allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
-                for ff in range(0, frames):
-                    IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
-                    IM = IM.cuda()
-                    vec = model(IM).cpu().detach().numpy() #Extract image vector
-                    allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = list(chain.from_iterable(vec))
-                    
-                print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
-                    
-                dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
-        
+    with torch.no_grad():
+        #Loop through the experimental conditions
+        for ee in range(0,len(exp)):
+            allActs = {}
+            
+            for ss in range(0,len(skel[ee])):
+                for sf in SF:
+                    allActs['Figure_' + skel[ee][ss] +'_' + sf] = np.zeros((frames, actNum))
+                    for ff in range(0, frames):
+                        IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
+                        IM = IM.cuda()
+                        if modelType[mm] == 'CorNet_Z' or modelType[mm] == 'CorNet_S':
+                            _model_feats = []
+                            model(IM)
+                            vec = _model_feats[0][0]
+                        else:
+                            vec = model(IM).cpu().detach().numpy() #Extract image vector
+                            vec = list(chain.from_iterable(vec))
+
+                        allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = vec
+                        
+                    print(modelType[mm], exp[ee], skel[ee][ss] +'_' + sf)
+                        
+                    dd.io.save('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5', allActs)
+            
     
