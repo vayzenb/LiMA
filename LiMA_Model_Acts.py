@@ -27,8 +27,8 @@ exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
-modelType = ['CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN']
-modelType = ['CorNet_Z', 'CorNet_S']
+modelType = ['SayCam','CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN']
+modelType = ['SayCam']
 
 
 frames = 300
@@ -69,22 +69,19 @@ for mm in range(0, len(modelType)):
                 
     elif modelType[mm] == 'AlexNet_SN':
         model = torchvision.models.alexnet(pretrained=False)
-        #model.features = torch.nn.DataParallel(model.features)
-        checkpoint = torch.load('ShapeNet_AlexNet_Weights.pth.tar')
+        checkpoint = torch.load('Weights/ShapeNet_AlexNet_Weights.pth.tar')
         model.load_state_dict(checkpoint)
         new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
         model.classifier = new_classifier #replace model classifier with stripped version
-        #model.to(device)
         layer = "fc7"
         actNum = 4096
         
     elif modelType[mm] == 'ResNet_SN':
         model = torchvision.models.resnet50(pretrained=False)
-        #model = torch.nn.DataParallel(model.features)
-        checkpoint = torch.load('ShapeNet_ResNet50_Weights.pth.tar')
+        checkpoint = torch.load('Weights/ShapeNet_ResNet50_Weights.pth.tar')
         model.load_state_dict(checkpoint)
         model = nn.Sequential(*list(model.children())[:-1])
-        #model.to(device)
+        
         layer = "avgpool"
         actNum = 2048
     
@@ -116,9 +113,22 @@ for mm in range(0, len(modelType)):
         
         model_layer = getattr(getattr(m, 'decoder'), layer)
         model_layer.register_forward_hook(_store_feats)
+
+    elif modelType[mm] == 'SayCam':
+        model = torchvision.models.resnext50_32x4d(pretrained=False)
+        #model = torch.nn.DataParallel(model)
+        #model.fc = torch.nn.Linear(in_features=2048, out_features=n_out, bias=True)
+        checkpoint = torch.load('Weights/SayCam_ResNext_Weights.pth.tar')
+        model.load_state_dict(checkpoint)
+
+        model = nn.Sequential(*list(model.children())[:-1])
+
+
+
+
     
 
-    model.cuda()
+    model = torch.nn.DataParallel(model).cuda()
     model.eval() #Set model into evaluation mode
         
     with torch.no_grad():
