@@ -9,7 +9,7 @@ setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
 cond = c('View', 'SF', 'Skel')
-ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN')
+ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S')
 classifier = c("OCS", "ISOF")
 
 ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof', "Cond")
