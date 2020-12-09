@@ -17,8 +17,8 @@ import deepdish as dd
    
 exp = ['Exp1', 'Exp2']
 
-modelType = ['FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
-modelType = ['CorNet_Z', 'CorNet_S']
+modelType = ['CorNet_Z', 'CorNet_S','FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
+modelType = ['SayCam']
 
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon','Shrink', 'Wave']
