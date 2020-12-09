@@ -2,6 +2,7 @@
 #Videos/
 
 #Ignore weights file
+Weights/
 ShapeNet_ResNet50_Weights.pth.tar
 ShapeNet_AlexNet_Weights.pth.tar
 
