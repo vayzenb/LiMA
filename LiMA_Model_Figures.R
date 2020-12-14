@@ -3,7 +3,7 @@ rm(list = ls())
 library(ggplot2)
 library(reshape2)
 
-setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
+setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
 
 #load('Infant_Data/LiMA_Model_Data_Size.RData')
 load('Infant_Data/LiMA_Model_Data.RData')
@@ -13,8 +13,8 @@ load('Infant_Data/LiMA_Model_Data_MultiItem.RData')
 exp = c('Exp1', 'Exp2')
 classifier = c("OCS", "ISOF")
 
-ModelType= c('Infant', 'GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S')
-ActualName= c('Infants', 'GBJ', 'GIST',  'AlexNet-IN', 'ResNet-IN', 'AlexNet-SIN', 'ResNet-SIN', 'CorNet-Z', 'CorNet-S')
+ModelType= c('Infant', 'GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S','SayCam')
+ActualName= c('Infants', 'GBJ', 'GIST',  'AlexNet-IN', 'ResNet-IN', 'AlexNet-SIN', 'ResNet-SIN', 'CorNet-Z', 'CorNet-S', 'SayCam')
 
 for (mm in 1:length(ModelType)){
   Exp1.Models[,1][Exp1.Models[,1] == ModelType[mm]] = ActualName[mm]

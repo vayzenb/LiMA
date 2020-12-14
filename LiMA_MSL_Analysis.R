@@ -5,10 +5,10 @@ library(reshape2)
 library(dplyr)
 library(boot)
 
-setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
+setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
-ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S')
+ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S','SayCam')
 classifier = c("OCS", "ISOF")
 
 ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof')
