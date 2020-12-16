@@ -63,8 +63,9 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
 
-    #Decoder
-    decode = nn.Sequential(nn.ReLU(),nn.ConvTranspose2d(actNum, 3, 224))
+
+
+    
 
     #model.cuda()
     model.eval() #Set model into evaluation mode
