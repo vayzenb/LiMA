@@ -122,6 +122,8 @@ for mm in range(0, len(modelType)):
         model.load_state_dict(checkpoint)
 
         model = nn.Sequential(*list(model.children())[:-1])
+        
+        actNum = 2048
 
 
 
