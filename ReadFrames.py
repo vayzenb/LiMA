@@ -32,6 +32,7 @@ for ii in range(0,len(vids)):
     for ii in range(0,len(frames)):
         IM = Image.open("Frames/" + vidFile + "/" + frames[ii]).convert("RGB")
         IM = IM.crop((370, 100, 1070, 800)) 
+        IM = IM.resize((350, 350))
         IM.save("Frames/" + vidFile + "/"  + frames[ii])
     
       
