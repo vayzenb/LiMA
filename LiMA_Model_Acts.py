@@ -52,31 +52,31 @@ def _store_feats(layer, inp, output):
     output = output.cpu().detach().numpy()
     _model_feats.append(np.reshape(output, (len(output), -1)))
 
-for mm in range(0, len(modelType)):
-        #select model to run
-    if modelType[mm] == 'AlexNet_IN':
+def load_model(modelType_):
+    #select model to run
+    if modelType_ == 'AlexNet_IN':
         model = torchvision.models.alexnet(pretrained=True)
-        new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        new_classifier = nn.Sequential(*list(model.classifier.children())[:-2])
         model.classifier = new_classifier #replace model classifier with stripped version
         layer = "fc7"
         actNum = 4096
         
-    elif modelType[mm] == 'ResNet_IN':
+    elif modelType_ == 'ResNet_IN':
         model = torchvision.models.resnet50(pretrained=True)
         model = nn.Sequential(*list(model.children())[:-1])
         layer = "avgpool"
         actNum = 2048
                 
-    elif modelType[mm] == 'AlexNet_SN':
+    elif modelType_ == 'AlexNet_SN':
         model = torchvision.models.alexnet(pretrained=False)
         checkpoint = torch.load('Weights/ShapeNet_AlexNet_Weights.pth.tar')
         model.load_state_dict(checkpoint)
-        new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        new_classifier = nn.Sequential(*list(model.classifier.children())[:-2])
         model.classifier = new_classifier #replace model classifier with stripped version
         layer = "fc7"
         actNum = 4096
         
-    elif modelType[mm] == 'ResNet_SN':
+    elif modelType_ == 'ResNet_SN':
         model = torchvision.models.resnet50(pretrained=False)
         checkpoint = torch.load('Weights/ShapeNet_ResNet50_Weights.pth.tar')
         model.load_state_dict(checkpoint)
@@ -85,13 +85,22 @@ for mm in range(0, len(modelType)):
         layer = "avgpool"
         actNum = 2048
     
-    elif modelType[mm] == 'CorNet_Z':
+    elif modelType_ == 'CorNet_Z':
         model = getattr(cornet, 'cornet_z')
         model = model(pretrained=False, map_location='gpu')
-        
+        checkpoint = torch.load('Weights/cornet_z.pth')
+        model.load_state_dict(checkpoint['state_dict'])
         layer = "avgpool"
         actNum = 512
     
+    
+        #encoder, in_feat = load_model('CorNet_S') #load encoder
+        #decode_layer = nn.Sequential(*list(encoder.children())[0][4][:-3])
+        #encoder = nn.Sequential(*list(encoder.children())[0][:-1])
+        #encoder.add_module('4', decode_layer)
+        #print(decode_layer)
+        #encoder.add_module('decoder', decode_layer)
+        print(encoder)
         try:
             m = model.module
         except:
@@ -99,10 +108,11 @@ for mm in range(0, len(modelType)):
         model_layer = getattr(getattr(m, 'decoder'), layer)
         model_layer.register_forward_hook(_store_feats)
 
-    elif modelType[mm] == 'CorNet_S':
+    elif modelType_ == 'CorNet_S':
         model = getattr(cornet, 'cornet_s')
         model = model(pretrained=False, map_location='gpu')
-        
+        checkpoint = torch.load('Weights/cornet_s.pth')
+        model.load_state_dict(checkpoint['state_dict'])
         layer = "avgpool"
         actNum = 512        
 
@@ -114,20 +124,23 @@ for mm in range(0, len(modelType)):
         model_layer = getattr(getattr(m, 'decoder'), layer)
         model_layer.register_forward_hook(_store_feats)
 
-    elif modelType[mm] == 'SayCam':
+    elif modelType_ == 'SayCam':
         model = torchvision.models.resnext50_32x4d(pretrained=False)
-        model = torch.nn.DataParallel(model)
+        #model = torch.nn.DataParallel(model)
         #model.fc = torch.nn.Linear(in_features=2048, out_features=n_out, bias=True)
         checkpoint = torch.load('Weights/SayCam_ResNext_Weights.pth.tar')
         model.load_state_dict(checkpoint)
-
-        model = nn.Sequential(*list(model.children())[:-1])
         
         actNum = 2048
 
+        model = nn.Sequential(*list(model.children())[:-1])
+        
+    return model, actNum
 
 
-
+for mm in range(0, len(modelType)):
+        #select model to run
+    model = load_model(modelType[mm])
     
 
     model.cuda()
