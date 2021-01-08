@@ -18,7 +18,7 @@ ModelType= c( 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
 skel = list(list('23', '31', '26'), list('31_0', '31_50'))
 SF = list('Skel', 'Bulge')
 
-ModelCols = c('Model', 'Skel1', 'SF1', 'hab_trials', 'hab_start', 'hab_end', 'skel2','sf2', 'skel_cat', "sf_cat", 'error','ignore')
+ModelCols = c('Model', 'Skel1', 'SF1', 'hab_trials', 'hab_start', 'hab_end', 'skel2','sf2', 'skel_cat', "sf_cat", 'error')
 SummaryCols = c('Model', 'Condition', 'hab_num', 'hab_start', 'hab_end', 'Acc', 'CI_Low', 'CI_High')
 alpha = .05
 iter = 10000
@@ -137,7 +137,7 @@ for (ee in 1:length(exp)){
       
   
   colnames(ModelSummary) = SummaryCols
-  assign(paste(exp[ee], '.Models', sep=""), ModelSummary)
+  assign(paste(exp[ee], '.Models_AE', sep=""), ModelSummary)
   
   
 }

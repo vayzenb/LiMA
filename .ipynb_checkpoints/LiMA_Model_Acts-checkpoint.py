@@ -27,8 +27,8 @@ exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
-modelType = ['SayCam','CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN']
-modelType = ['SayCam']
+modelType = ['SayCam','CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN']
+#modelType = ['SayCam']
 
 
 frames = 300

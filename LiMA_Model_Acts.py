@@ -27,8 +27,8 @@ exp = ['Exp1', 'Exp2']
 
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge', 'Balloon', 'Shrink', 'Wave']
-modelType = ['SayCam','CorNet_Z', 'CorNet_S','AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN']
-modelType = ['SayCam']
+modelType = ['ResNext-TC-SAY','CorNet_Z', 'CorNet_S','ResNet_IN', 'ResNet_SN']
+#modelType = ['SayCam']
 
 
 frames = 300
@@ -92,21 +92,18 @@ def load_model(modelType_):
         model.load_state_dict(checkpoint['state_dict'])
         layer = "avgpool"
         actNum = 512
-    
-    
-        #encoder, in_feat = load_model('CorNet_S') #load encoder
-        #decode_layer = nn.Sequential(*list(encoder.children())[0][4][:-3])
-        #encoder = nn.Sequential(*list(encoder.children())[0][:-1])
-        #encoder.add_module('4', decode_layer)
-        #print(decode_layer)
-        #encoder.add_module('decoder', decode_layer)
-        print(encoder)
-        try:
-            m = model.module
-        except:
-            m = model
-        model_layer = getattr(getattr(m, 'decoder'), layer)
-        model_layer.register_forward_hook(_store_feats)
+            
+        decode_layer = nn.Sequential(*list(model.children())[0][4][:-3])
+        model = nn.Sequential(*list(model.children())[0][:-1])
+        model.add_module('4', decode_layer)
+        
+        
+        #try:
+        #    m = model.module
+        #except:
+        #    m = model
+        #model_layer = getattr(getattr(m, 'decoder'), layer)
+        #model_layer.register_forward_hook(_store_feats)
 
     elif modelType_ == 'CorNet_S':
         model = getattr(cornet, 'cornet_s')
@@ -116,15 +113,18 @@ def load_model(modelType_):
         layer = "avgpool"
         actNum = 512        
 
-        try:
-            m = model.module
-        except:
-            m = model
+        decode_layer = nn.Sequential(*list(model.children())[0][4][:-3])
+        model = nn.Sequential(*list(model.children())[0][:-1])
+        model.add_module('4', decode_layer)
+        #try:
+        #    m = model.module
+        #except:
+        #    m = model
         
-        model_layer = getattr(getattr(m, 'decoder'), layer)
-        model_layer.register_forward_hook(_store_feats)
+        #model_layer = getattr(getattr(m, 'decoder'), layer)
+        #model_layer.register_forward_hook(_store_feats)
 
-    elif modelType_ == 'SayCam':
+    elif modelType_ == 'ResNext-TC-SAY':
         model = torchvision.models.resnext50_32x4d(pretrained=False)
         #model = torch.nn.DataParallel(model)
         #model.fc = torch.nn.Linear(in_features=2048, out_features=n_out, bias=True)
@@ -140,7 +140,7 @@ def load_model(modelType_):
 
 for mm in range(0, len(modelType)):
         #select model to run
-    model = load_model(modelType[mm])
+    model, actNum = load_model(modelType[mm])
     
 
     model.cuda()
@@ -157,13 +157,9 @@ for mm in range(0, len(modelType)):
                     for ff in range(0, frames):
                         IM = image_loader('Frames/Figure_' + skel[ee][ss] +'_' + sf + '/Figure_' + skel[ee][ss] +'_' + sf + '_' + str(ff+1) +'.jpg')
                         IM = IM.cuda()
-                        if modelType[mm] == 'CorNet_Z' or modelType[mm] == 'CorNet_S':
-                            _model_feats = []
-                            model(IM)
-                            vec = _model_feats[0][0]
-                        else:
-                            vec = model(IM).cpu().detach().numpy() #Extract image vector
-                            vec = list(chain.from_iterable(vec))
+                        
+                        vec = model(IM).cpu().detach().numpy() #Extract image vector
+                        vec = list(chain.from_iterable(vec))
 
                         allActs['Figure_' + skel[ee][ss] +'_' + sf][ff] = vec
                         

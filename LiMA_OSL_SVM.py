@@ -20,15 +20,15 @@ exp = ['Exp1', 'Exp2']
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
         ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
 
-modelType = ['CorNet_Z', 'CorNet_S', 'FF_SN','R_SN', 'FF_IN', 'R_IN', 'GBJ', 'GIST']
-modelType = ['SayCam']
+modelType = ['ResNext-TC-SAY','CorNet_Z', 'CorNet_S','ResNet_IN', 'ResNet_SN']
+#modelType = ['SayCam']
 
 
 
 total_frames= 300
 train_frames = 150
 test_frames = total_frames - train_frames
-
+#test_frames = total_frames
 
 folK = 10
 
@@ -142,5 +142,5 @@ for ee in range(0,len(exp)):
                 
                 
   
-        np.savetxt('Results/LiMA_' + exp[ee] + '_SayCam_OSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
             

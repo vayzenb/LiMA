@@ -9,7 +9,7 @@ setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
 cond = c('View', 'SF', 'Skel')
-ModelType= c('GBJ', 'GIST', 'FF_IN', 'R_IN', 'FF_SN', 'R_SN', 'CorNet_Z', 'CorNet_S',"SayCam")
+ModelType= c( 'CorNet_Z', 'CorNet_S',"ResNext-TC-SAY", "ResNet_IN", "ResNet_SN")
 classifier = c("OCS", "ISOF")
 
 ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof', "Cond")
@@ -72,26 +72,67 @@ for (ee in 1:length(exp)){
      for (mm in 1:length(ModelType)){
       
        #Select appropriate data depending on condition
+       # if(cc == 'Ident' ) { #same object
+       #   temp_fam = df[df$Model == ModelType[mm] & df$skel_cat == "same" & df$sf_cat == "same",]
+       #   temp_nov = df[df$Model == ModelType[mm] & df$skel_cat == "diff" & df$sf_cat == "same",]
+       #   
+       # }else if (cc == 'SF' )  { #generalize across SF
+       #   temp_fam = df[df$Model == ModelType[mm] & df$skel_cat == "same" & df$sf_cat == "diff",]
+       #   temp_nov = df[df$Model == ModelType[mm] & df$skel_cat == "diff" & df$sf_cat == "diff",]
+       #   
+       # }else if (cc == "Skel") { #generalize across skel
+       #   temp_fam = df[df$Model == ModelType[mm] & df$skel_cat == "diff" & df$sf_cat == "same",]
+       #   temp_nov = df[df$Model == ModelType[mm] & df$skel_cat == "diff" & df$sf_cat == "diff",]
+       # }
+       # 
+       # 
+       # #Sample familiar and novel errors with replacement
+       # temp_fam = sample_n(temp_fam,nrow(temp_fam), replace = TRUE) 
+       # temp_nov = sample_n(temp_nov,nrow(temp_fam), replace = TRUE)  #note, there are more rows in the novel array, so it is subsampled to match familiar
+       # 
+       # fam_error = mean(temp_fam$error, na.rm = TRUE)
+       # nov_error = mean(temp_nov$error, na.rm = TRUE)
+       # bootMat.model[[n]][mm,ii] = nov_error/(fam_error + nov_error)
+       
+       #Select appropriate data depending on condition
       if(cc == 'View' ) {
-       tempMAT = df[df$Model == ModelType[mm] & df$SF == "Same" & df$Cond == "SF",]
+        temp_fam = df[df$Model == ModelType[mm] & df$Skel == "Same" & df$SF == "Same",]
+        temp_nov = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$SF == "Same",]
        
       }else if (cc == 'SF' )  {
-        tempMAT = df[df$Model == ModelType[mm] & df$SF == "Diff" & df$Cond == "SF",]
+        temp_fam = df[df$Model == ModelType[mm] & df$Skel == "Same" & df$SF == "Diff",]
+        temp_nov = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$SF == "Diff",]
        
       }else if (cc == "Skel") {
-        tempMAT = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$Cond == "SF",]
+        temp_fam = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$SF == "Same",]
+        temp_nov = df[df$Model == ModelType[mm] & df$Skel == "Diff" & df$SF == "Diff",]
       }
        
-       #Sample with replacement
-       tempMAT = sample_n(tempMAT,nrow(tempMAT), replace = TRUE)
-       #Add to appropriate matrix
-       if (cc == 'SF' | cc == 'View')  {
-       bootMat.model[[n]][mm,ii] = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
-                                      mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
-       }else if (cc == "Skel") {
-         bootMat.model[[n]][mm,ii] = (mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Same"], na.rm = TRUE) +
-                                        mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Diff"], na.rm = TRUE))/2
+       #Sample familiar and novel errors with replacement
+       temp_fam = sample_n(temp_fam,nrow(temp_fam), replace = TRUE) 
+       temp_nov = sample_n(temp_nov,nrow(temp_fam), replace = TRUE)  #note, there are more rows in the novel array, so it is subsampled to match familiar
+       
+
+       if (cc == "SF" | cc == "View"){
+         fam_error = mean(temp_fam[[cl]], na.rm = TRUE)
+         nov_error = mean(temp_nov[[cl]], na.rm = TRUE)
+        
+         
+       }else{
+         fam_error = mean(temp_fam[[paste(cl, "_SF",sep="")]], na.rm = TRUE)
+         nov_error = mean(temp_nov[[paste(cl, "_SF",sep="")]], na.rm = TRUE)
+         
        }
+       
+       bootMat.model[[n]][mm,ii] = (fam_error + nov_error)/2
+       #Add to appropriate matrix
+       # if (cc == 'SF' | cc == 'View')  {
+       # bootMat.model[[n]][mm,ii] = (mean(tempMAT[[cl]][tempMAT$Skel=="Same"], na.rm = TRUE) +
+       #                                mean(tempMAT[[cl]][tempMAT$Skel=="Diff"], na.rm = TRUE))/2
+       # }else if (cc == "Skel") {
+       #   bootMat.model[[n]][mm,ii] = (mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Same"], na.rm = TRUE) +
+       #                                  mean(tempMAT[[paste(cl, "_SF",sep="")]][tempMAT$SF=="Diff"], na.rm = TRUE))/2
+       # }
        
      }
       n= n +1
