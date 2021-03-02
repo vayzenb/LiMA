@@ -29,12 +29,6 @@ iter = 10000
 for (ee in 1:length(exp)){
   #combine all model data
   df = NULL
-  #ModelSummary = data.frame(Model = as.character(), Condition = as.character(), 
-  #                         hab_num = as.numeric(), hab_start = as.numeric(), hab_end = as.numeric(),
-  #                          Acc = as.numeric(), CI_Low = as.numeric(), CI_High = as.numeric())
-  
-  #colnames(ModelSummary) = SummaryCols
-  
 
   for(mm in ModelType){
     
