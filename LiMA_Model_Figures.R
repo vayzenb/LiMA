@@ -4,8 +4,10 @@ library(ggplot2)
 library(reshape2)
 
 setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
+#setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 #load('Infant_Data/LiMA_Model_Data_Size.RData')
+load('Infant_Data/LiMA_data_all.RData')
 load('Infant_Data/LiMA_Model_Data.RData')
 load('Infant_Data/LiMA_Model_Data_MultiItem.RData')
 load('Infant_Data/LiMA_AE_Data.RData')
@@ -40,6 +42,28 @@ sPlot = 2.5
 ModelCols = c('#39a055','#6eb57a', '#de425b', '#e9747e')
 ModelCols = c('#39a055','#FFD700', '#9D02D7', '#de425b')
 for (ee in exp){
+  
+  Exp.summary = eval(as.name(paste(ee, '.summary', sep="")))
+  Exp.summary$Condition = factor(c("First 4","Last 4","Familiar", "Novel"), levels = c("First 4","Last 4","Novel", "Familiar"))
+  
+  ggplot(Exp.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "#32759b", width = .5, size = sLine) + 
+    geom_linerange(ymin = Exp.summary$Fixation - Exp.summary$SE, ymax =Exp.summary$Fixation + Exp.summary$SE, size = sLine) +
+    xlab("Trial Type") + ylab("Mean Looking Time (s)") + scale_y_continuous(breaks = seq(0, 12, by = 2), limits=c(0,12), expand = c(0,0)) +
+    scale_x_discrete(breaks=c("First 4","Last 4","Novel", "Familiar"), labels=c("First 4","Last 4","Different", "Same")) +
+    theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
+                            axis.text.x = element_text(size=sAx, color = "black"),  
+                            axis.title.x = element_blank(), 
+                            axis.title.y = element_text(size=sTitle),
+                            axis.line = element_line(size = sLine),
+                            axis.ticks= element_line(size = sLine, color = 'black'),
+                            axis.ticks.length = unit(.09, "cm"))
+  
+  
+  ggsave(filename =  paste('Infant_Data/Figures/LiMA_', ee, '_infant.png', sep = ""), plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
+  
+
+  
+  
   #Make AE figures
   df = as.data.frame(eval(as.name(paste(ee, '.Models_AE', sep=""))))
   infant.data = eval(as.name(paste(ee, '.Models', sep="")))[1,]
