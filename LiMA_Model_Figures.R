@@ -3,8 +3,8 @@ rm(list = ls())
 library(ggplot2)
 library(reshape2)
 
-setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
-#setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
+#setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
+setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA')
 
 #load('Infant_Data/LiMA_Model_Data_Size.RData')
 load('Infant_Data/LiMA_data_all.RData')
