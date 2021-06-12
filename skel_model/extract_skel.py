@@ -21,10 +21,10 @@ from skimage.filters import  gaussian
 from skimage.util import crop
 import os
 
-stim_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
-out_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/skel_model/skels"
-skel = "26"
-sf = 'skel'
+stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/Frames"
+out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/skel_model/skels"
+skel = [23, 26, 31]
+SF = ['Skel','Bulge']
 
 def sample_sphere_2D(number_of_samples):
     sphere_points = np.zeros((number_of_samples,2))
@@ -101,64 +101,67 @@ def compute_aof(distImage ,IDX,sphere_points,epsilon):
 
 
 
-
-#jit(nopython=True)
-for ff in range(1,301,30):
-    
-    inframe = f'{stim_folder}/Figure_{skel}_{sf}/Figure_{skel}_{sf}_{ff}.jpg'
-    outfile= f'{out_folder}/Figure_{skel}_{sf}/Figure_{skel}_{sf}_{ff}.jpg'
-    os.makedirs(f'{out_folder}/Figure_{skel}_{sf}', exist_ok = True)
-    print(outfile)
-    im = io.imread(inframe)
-    im = rgb2gray(im)
-    im = resize(im, [225,225], anti_aliasing=True)
-    #thresh = threshold_otsu(im)
-    #binary = im > thresh
-    
-    
-    img = img_as_float(im)
-    filtered_img = gaussian(img, sigma=3)
-    # Feel free to play around with the parameters to see how they impact the result
-    cv = chan_vese(filtered_img, mu=0.25, lambda1=.5, lambda2=1, tol=1e-3, max_iter=200,
-                   dt=0.5, init_level_set='checkerboard', extended_output=True)
-    
-    silh = cv[0].astype(int)
-    
-    
-    
-    I = silh
-    
-    
-    
-    number_of_samples = 60
-    epsilon = 1 
-    flux_threshold = 18
-    
-    
-    # In[73]:
-    
-    distImage,IDX = morphOps.distance_transform_edt(I,return_indices=True);
-    sphere_points = sample_sphere_2D(number_of_samples)
-    fluxImage = compute_aof(distImage,IDX,sphere_points,epsilon)
-    
-    
-    
-    # In[74]:
-    
-    
-    #print(fluxImage.shape)
-    
-    
-    # In[75]:
-    
-    
-    plt.imshow(fluxImage)
-    skeletonImage = fluxImage
-    skeletonImage[skeletonImage < flux_threshold] = 0
-    skelim = np.interp(skeletonImage, (skeletonImage.min(), skeletonImage.max()), (0, 255))
-    #plt.imshow(skelim, cmap="gray")
-    
-    
-    skelim = crop(skelim, 5)
-    io.imsave(outfile,skelim)
-    #skeletonImage[skeletonImage > flux_threshold] = 1
+for sk in skel:
+    for sf in SF:
+        os.makedirs(f'{out_folder}/Figure_{sk}_{sf}', exist_ok = True)
+        #jit(nopython=True)
+        for ff in range(1,301,10):
+            
+            inframe = f'{stim_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
+            outfile= f'{out_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
+            
+            print(outfile)
+            im = io.imread(inframe)
+            im = rgb2gray(im)
+            im = resize(im, [225,225], anti_aliasing=True)
+            #thresh = threshold_otsu(im)
+            #binary = im > thresh
+            
+            
+            img = img_as_float(im)
+            filtered_img = gaussian(img, sigma=3)
+            # Feel free to play around with the parameters to see how they impact the result
+            cv = chan_vese(filtered_img, mu=0.25, lambda1=.5, lambda2=1, tol=1e-3, max_iter=200,
+                        dt=0.5, init_level_set='checkerboard', extended_output=True)
+            
+            silh = cv[0].astype(int)
+            
+            
+            
+            I = silh
+            #print(I.shape)
+            
+            
+            
+            number_of_samples = 60
+            epsilon = 1 
+            flux_threshold = 18
+        
+            
+            # In[73]:
+            
+            distImage,IDX = morphOps.distance_transform_edt(I,return_indices=True);
+            sphere_points = sample_sphere_2D(number_of_samples)
+            fluxImage = compute_aof(distImage,IDX,sphere_points,epsilon)
+            
+            
+            
+            # In[74]:
+            
+            
+            #print(fluxImage.shape)
+            
+            
+            # In[75]:
+            
+            
+            #plt.imshow(fluxImage)
+            skeletonImage = fluxImage
+            #skeletonImage[skeletonImage < flux_threshold] = 0
+            skelim = np.interp(skeletonImage, (skeletonImage.min(), skeletonImage.max()), (0, 255))
+            #plt.imshow(skelim, cmap="gray")
+            
+            
+            skelim = crop(skelim, 5)
+            io.imsave(outfile,skelim)
+            #skeletonImage[skeletonImage > flux_threshold] = 1
