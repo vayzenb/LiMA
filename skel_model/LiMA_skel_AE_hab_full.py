@@ -22,14 +22,14 @@ import pandas as pd
 '''
 set up steps
 '''
-
+stim_dir = f'skels/binary'
 exp = ['Exp1']
 
 skel = [['23','31','26'],['31_0', '31_50']]
 #skel = [['23'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
 #modelType = ['AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN', 'CorNet_Z', 'CorNet_S','SayCam']
-modelType = 'skel'
+modelType = 'blur'
 batch_num = 10
 #hab_min = 4 #minimum number of habituation trials to 
 #batch_num = 10 #how many frames to use at a time
@@ -55,8 +55,9 @@ hab_min = 4 #minimum number of habituation trials to
 
 
 def define_decoder():
-    #decoder = nn.Sequential(nn.Conv2d(3,1024,kernel_size=3, stride=2), nn.ReLU(), nn.MaxPool2d(kernel_size=2, stride=2, padding=1), nn.AdaptiveAvgPool2d(1),nn.ReLU(), nn.ConvTranspose2d(1024, 3, 224))
-    decoder = nn.Sequential(nn.Conv2d(3,1024,kernel_size=1, stride=1), nn.ReLU(), nn.AdaptiveAvgPool2d(1),nn.ReLU(), nn.ConvTranspose2d(1024, 3, 224))
+    decoder = nn.Sequential(nn.Conv2d(3,1024,kernel_size=3, stride=2), nn.ReLU(), nn.MaxPool2d(kernel_size=3, stride=2, padding=1), nn.AdaptiveAvgPool2d(1),nn.ReLU(), nn.ConvTranspose2d(1024, 3, 224))
+    #decoder = nn.Sequential(nn.Conv2d(3,1024,kernel_size=1, stride=1), nn.ReLU(), nn.AdaptiveAvgPool2d(1),nn.ReLU(), nn.ConvTranspose2d(1024, 3, 224))
+    #maybe try this with max pool instead
     decoder = decoder.cuda()
     
     return decoder
@@ -97,7 +98,7 @@ def habituate():
         for sk in range(0,len(skel[ee])):
             for sf in SF:
                 torch.cuda.empty_cache() #clear GPU memory
-                hab_dataset = LoadFrames(f'skels/Figure_{skel[ee][sk]}_{sf}', transform=transform)
+                hab_dataset = LoadFrames(f'{stim_dir}/Figure_{skel[ee][sk]}_{sf}', transform=transform)
                 trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=batch_num, shuffle=True, num_workers = 2, pin_memory=True)
 
                 early_hab = 0.0
@@ -202,7 +203,7 @@ def dishabituate():
                 for sk_dis in skel[en]:
                     for sf_dis in SF:
                         #load stim for dishab object
-                        hab_dataset = LoadFrames(f'skels/Figure_{sk_dis}_{sf_dis}', transform=transform)
+                        hab_dataset = LoadFrames(f'{stim_dir}/Figure_{sk_dis}_{sf_dis}', transform=transform)
                         trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=batch_num, shuffle=True, num_workers = 2, pin_memory=True)
                 
 

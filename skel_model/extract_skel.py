@@ -6,7 +6,7 @@ Created on Tue Jun  8 13:10:51 2021
 """
 import matplotlib.pyplot as plt
 import numpy as np
-
+from scipy import stats
 #import cv2 as cv
 from skimage import io
 from skimage.color import rgb2gray
@@ -15,16 +15,19 @@ from skimage.segmentation import chan_vese
 from skimage.transform import resize
 #import matplotlib.image as mpimg
 import math
-#from PIL import Image
+from PIL import Image
 import scipy.ndimage.morphology as morphOps
 from skimage.filters import  gaussian
 from skimage.util import crop
 import os
+import pdb
 
 stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/Frames"
 out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/skel_model/skels"
 skel = [23, 26, 31]
 SF = ['Skel','Bulge']
+
+
 
 def sample_sphere_2D(number_of_samples):
     sphere_points = np.zeros((number_of_samples,2))
@@ -103,17 +106,22 @@ def compute_aof(distImage ,IDX,sphere_points,epsilon):
 
 for sk in skel:
     for sf in SF:
-        os.makedirs(f'{out_folder}/Figure_{sk}_{sf}', exist_ok = True)
+        os.makedirs(f'{out_folder}/binary/Figure_{sk}_{sf}', exist_ok = True)
+        os.makedirs(f'{out_folder}/blur/Figure_{sk}_{sf}', exist_ok = True)
+        os.makedirs(f'{out_folder}/coords/Figure_{sk}_{sf}', exist_ok = True)
         #jit(nopython=True)
         for ff in range(1,301,10):
             
             inframe = f'{stim_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
-            outfile= f'{out_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
+            figure= f'Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}'
             
-            print(outfile)
+            print(figure)
             im = io.imread(inframe)
+            
+
             im = rgb2gray(im)
             im = resize(im, [225,225], anti_aliasing=True)
+
             #thresh = threshold_otsu(im)
             #binary = im > thresh
             
@@ -130,8 +138,6 @@ for sk in skel:
             
             I = silh
             #print(I.shape)
-            
-            
             
             number_of_samples = 60
             epsilon = 1 
@@ -157,11 +163,27 @@ for sk in skel:
             
             #plt.imshow(fluxImage)
             skeletonImage = fluxImage
-            #skeletonImage[skeletonImage < flux_threshold] = 0
+            
+            
+            skel_coords = np.column_stack(np.where(skeletonImage > flux_threshold))
+            skel_vals = skeletonImage[skel_coords[:,0], skel_coords[:,1]]
+            skel = np.zeros((len(skel_vals),3))
+        
+            skel[:,:2] = skel_coords
+            skel[:,2] = skel_vals
+            #skel_coords = skeletonImage[skeletonImage > flux_threshold]
+            
+            skeletonImage[skeletonImage < flux_threshold] = 0
             skelim = np.interp(skeletonImage, (skeletonImage.min(), skeletonImage.max()), (0, 255))
+            
             #plt.imshow(skelim, cmap="gray")
-            
-            
+            #save coords
+            np.savetxt(f'{out_folder}/coords/{figure}.csv', skel,delimiter=',')
+            #save binary
             skelim = crop(skelim, 5)
-            io.imsave(outfile,skelim)
+            io.imsave(f'{out_folder}/binary/{figure}.jpg',skelim)
+
+            #save blurred binary
+            skelim = gaussian(skelim, sigma=3)
+            io.imsave(f'{out_folder}/blur/{figure}.jpg',skelim)
             #skeletonImage[skeletonImage > flux_threshold] = 1
