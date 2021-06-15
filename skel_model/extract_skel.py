@@ -4,6 +4,7 @@ Created on Tue Jun  8 13:10:51 2021
 
 @author: vayze
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
@@ -22,13 +23,17 @@ from skimage.util import crop
 import os
 import pdb
 
+
 stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/Frames"
 out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/skel_model/skels"
+
+stim_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
+out_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
 skel = [23, 26, 31]
 SF = ['Skel','Bulge']
 
 
-
+            # In[73]:
 def sample_sphere_2D(number_of_samples):
     sphere_points = np.zeros((number_of_samples,2))
     alpha = (2*math.pi)/(number_of_samples)
@@ -103,7 +108,7 @@ def compute_aof(distImage ,IDX,sphere_points,epsilon):
     return fluxImage
 
 
-
+            # In[72]:
 for sk in skel:
     for sf in SF:
         os.makedirs(f'{out_folder}/binary/Figure_{sk}_{sf}', exist_ok = True)
@@ -111,7 +116,9 @@ for sk in skel:
         os.makedirs(f'{out_folder}/coords/Figure_{sk}_{sf}', exist_ok = True)
         #jit(nopython=True)
         for ff in range(1,301,10):
-            
+            sk = 23
+            sf = 'skel'
+            ff =61
             inframe = f'{stim_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
             figure= f'Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}'
             
@@ -132,8 +139,9 @@ for sk in skel:
             cv = chan_vese(filtered_img, mu=0.25, lambda1=.5, lambda2=1, tol=1e-3, max_iter=200,
                         dt=0.5, init_level_set='checkerboard', extended_output=True)
             
-            silh = cv[0].astype(int)
             
+            silh = cv[0].astype(int)
+            pdb.set_trace()
             
             
             I = silh
