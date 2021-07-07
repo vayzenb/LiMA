@@ -13,7 +13,7 @@ exp = c('Exp1', 'Exp2')
 #Sf is whether it generalized across an SF chnage (one-shot by skeleton)
 #skel is whether igeneralied  across a skel change (one-shot by )
 cond = c('Ident', 'SF', 'Skel') 
-ModelType= c( 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
+ModelType= c('skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
 #ModelType= c("SayCam")
 skel = list(list('23', '31', '26'), list('31_0', '31_50'))
 SF = list('Skel', 'Bulge')
@@ -22,8 +22,6 @@ ModelCols = c('Model', 'Skel1', 'SF1', 'hab_trials', 'hab_start', 'hab_end', 'sk
 SummaryCols = c('Model', 'Condition', 'hab_num', 'hab_start', 'hab_end', 'Acc', 'CI_Low', 'CI_High')
 alpha = .05
 iter = 10000
-
-
 
 
 for (ee in 1:length(exp)){
