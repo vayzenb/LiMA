@@ -6,6 +6,7 @@ library(dplyr)
 library(boot)
 
 setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
+setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA/')
 
 exp = c('Exp1', 'Exp2')
 
@@ -13,8 +14,9 @@ exp = c('Exp1', 'Exp2')
 #Sf is whether it generalized across an SF chnage (one-shot by skeleton)
 #skel is whether igeneralied  across a skel change (one-shot by )
 cond = c('Ident', 'SF', 'Skel') 
-ModelType= c('skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
-#ModelType= c("SayCam")
+#ModelType= c('Skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
+ModelType= c('skel','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
+
 skel = list(list('23', '31', '26'), list('31_0', '31_50'))
 SF = list('Skel', 'Bulge')
 
@@ -41,6 +43,7 @@ for (ee in 1:length(exp)){
     
   }
   colnames(df) = ModelCols
+  df$error = df$error - df$hab_end 
       
   #set up empty matrices for each condition (3) (the number of rows in matrix corresponds to the model)
   bootMat.model = list(matrix(0,length(ModelType),iter), matrix(0,length(ModelType),iter),matrix(0,length(ModelType),iter))
@@ -134,4 +137,4 @@ for (ee in 1:length(exp)){
   
 }
 
-save(Exp1.Models, Exp2.Models, file="Infant_Data/LiMA_AE_Data.RData")
+save(Exp1.Models_AE, Exp2.Models_AE, file="Infant_Data/LiMA_AE_Data.RData")
