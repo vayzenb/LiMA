@@ -27,10 +27,12 @@ import pdb
 stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/Frames"
 out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/skel_model/skels"
 
-stim_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
-out_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
-skel = [23, 26, 31]
+#stim_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
+#out_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
+skel = ['23', '26', '31', '31_0', '31_50']
 SF = ['Skel','Bulge']
+skel = ['23']
+
 
 
             # In[73]:
@@ -115,10 +117,8 @@ for sk in skel:
         os.makedirs(f'{out_folder}/blur/Figure_{sk}_{sf}', exist_ok = True)
         os.makedirs(f'{out_folder}/coords/Figure_{sk}_{sf}', exist_ok = True)
         #jit(nopython=True)
-        for ff in range(1,301,10):
-            sk = 23
-            sf = 'skel'
-            ff =61
+        for ff in range(1,301,1):
+  
             inframe = f'{stim_folder}/Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}.jpg'
             figure= f'Figure_{sk}_{sf}/Figure_{sk}_{sf}_{ff}'
             
@@ -141,7 +141,11 @@ for sk in skel:
             
             
             silh = cv[0].astype(int)
-            pdb.set_trace()
+            
+            if np.mean(silh[0:25, 0:25]) > 0:
+                cv = chan_vese(filtered_img, mu=0.1, lambda1=.5, lambda2=1, tol=1e-3, max_iter=500,
+                dt=.5, init_level_set='checkerboard', extended_output=True)
+                silh = cv[0].astype(int)
             
             
             I = silh

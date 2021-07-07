@@ -23,7 +23,7 @@ import pandas as pd
 set up steps
 '''
 stim_dir = f'skels/binary'
-exp = ['Exp1']
+exp = ['Exp1', 'Exp2']
 
 skel = [['23','31','26'],['31_0', '31_50']]
 #skel = [['23'],['31_0', '31_50']]
