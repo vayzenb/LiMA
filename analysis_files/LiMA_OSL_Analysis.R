@@ -8,8 +8,8 @@ library(boot)
 setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
 
 exp = c('Exp1', 'Exp2')
-cond = c('View', 'SF', 'Skel')
-ModelType= c( 'CorNet_Z', 'CorNet_S',"ResNext-TC-SAY", "ResNet_IN", "ResNet_SN")
+cond = c('SF', 'Skel')
+ModelType= c('skel','CorNet_S',"ResNext-TC-SAY", "ResNet_IN", "ResNet_SN")
 classifier = c("OCS", "ISOF")
 
 ModelCols = c('Exp', 'Model', 'Obj1', 'Obj2', 'Skel', 'SF', 'trAcc_ocs', 'tsAcc_ocs','trAcc_isof', 'tsAcc_isof', "Cond")

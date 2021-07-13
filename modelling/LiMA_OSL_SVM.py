@@ -6,7 +6,10 @@ Created on Sun Feb 16 15:16:04 2020
 
 @author: VAYZENB
 """
+curr_dir = '/home/vayzenbe/GitHub_Repos/LiMA'
 
+import sys
+sys.path.insert(1, f'{curr_dir}')
 
 from sklearn import svm
 from sklearn.ensemble import IsolationForest
@@ -20,7 +23,7 @@ exp = ['Exp1', 'Exp2']
 stim = [['23_Skel', '23_Bulge', '31_Skel', '31_Bulge','26_Skel', '26_Bulge'], \
         ['31_0_Skel', '31_0_Bulge','31_50_Skel', '31_50_Bulge']]
 
-modelType = ['ResNext-TC-SAY','CorNet_Z', 'CorNet_S','ResNet_IN', 'ResNet_SN']
+modelType = ['skel','ResNext-TC-SAY', 'CorNet_S','ResNet_IN', 'ResNet_SN']
 #modelType = ['SayCam']
 
 
@@ -44,7 +47,7 @@ for ee in range(0,len(exp)):
     for mm in range(0, len(modelType)):      
         
         
-        allActs = dd.io.load('Activations/LiMA_' + exp[ee] + '_' + modelType[mm] + '_Acts.h5')
+        allActs = dd.io.load(f'{curr_dir}/Activations/LiMA_{exp[ee]}_{modelType[mm]}_Acts.h5')
         for sTR in range(0,len(stim[ee])):
             for sTE in range(0,len(stim[ee])):
                 trainAcc = 0
@@ -142,5 +145,5 @@ for ee in range(0,len(exp)):
                 
                 
   
-        np.savetxt('Results/LiMA_' + exp[ee] + '_allModels_OSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
+        np.savetxt(f'{curr_dir}/Results/LiMA_' + exp[ee] + '_allModels_OSL.csv', CNN_Acc, delimiter=',', fmt= '%s')
             

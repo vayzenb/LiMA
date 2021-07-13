@@ -17,6 +17,10 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import gc
 import pandas as pd
+import pdb
+from itertools import chain
+import deepdish as dd
+
 
 
 '''
@@ -31,6 +35,7 @@ SF = ['Skel', 'Bulge']
 #modelType = ['AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN', 'CorNet_Z', 'CorNet_S','SayCam']
 modelType = 'blur'
 batch_num = 10
+n_frames = 300
 #hab_min = 4 #minimum number of habituation trials to 
 #batch_num = 10 #how many frames to use at a time
 #exp = ['Exp1']
@@ -52,6 +57,7 @@ criterion = nn.MSELoss()
 
 epochs = 100
 hab_min = 4 #minimum number of habituation trials to 
+actNum = 1024
 
 
 def define_decoder():
@@ -265,6 +271,54 @@ def dishabituate():
 
     print(df.groupby(['skel_cat', 'sf_cat'])['loss'].mean())
 
+ #This doesn't currently make any sense because each object was trained seperately, 
+ # and so objects with the same skel might have totally differnet different arrangement in the avgpool layer (even if the end result is the same) 
+ # an alternative is to train an AE on all objects
+def extract_acts():
+    for en, ee in enumerate(exp):
+        allActs = {}
+        #load habituated stim
+        for sk_hab in skel[en]:
+            for sf_hab in SF:
+                trial_result = []
 
-habituate()
-dishabituate()
+                hab_dataset = LoadFrames(f'{stim_dir}/Figure_{sk_hab}_{sf_hab}', transform=transform)
+                trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=1, shuffle=True, num_workers = 2, pin_memory=True)
+                
+
+                torch.cuda.empty_cache() #clear GPU memory
+                
+                #Load model
+                decoder = define_decoder()
+
+                #Load checkpoint from fully trained decoder
+                checkpoint = torch.load(f'{curr_dir}/Weights/decoder/{ee}_skel_Figure_{sk_hab}_{sf_hab}.pt')
+                #print(f'Weights/decoder/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}.pt')
+                decoder.load_state_dict(checkpoint['model_state_dict'])
+                #Extract just up to the avgpool layer
+                decoder = decoder[0:4]
+                decoder.eval()
+                
+                with torch.no_grad():
+                    
+            
+                    allActs['Figure_' + sk_hab +'_' + sf_hab] = np.zeros((n_frames, actNum))
+                    for ff, frames in enumerate(trainloader):
+                                              
+                        frames = frames.cuda()
+                        
+                        vec = decoder(frames).cpu().detach().numpy() #Extract image vector
+                        vec = list(chain.from_iterable(vec))
+
+                        allActs['Figure_' + sk_hab +'_' + sf_hab][ff] = vec
+                        
+                    print('skel', ee, sk_hab +'_' + sf_hab)
+                        
+                    dd.io.save(f'{curr_dir}/Activations/LiMA_{ee}_skel_Acts.h5', allActs)
+
+        #pdb.set_trace()
+            
+
+extract_acts()
+#habituate()
+#dishabituate()
