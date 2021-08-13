@@ -24,14 +24,17 @@ import os
 import pdb
 
 
-stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/Frames"
-out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/skel_model/skels"
+stim_folder = "/home/vayzenbe/GitHub_Repos/LiMA/stim/binary"
+out_folder = "/home/vayzenbe/GitHub_Repos/LiMA/modelling/skel_model/skels"
 
 #stim_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
 #out_folder = "C:/Users/vayze/Desktop/GitHub_Repos/LiMA/Frames"
 skel = ['23', '26', '31', '31_0', '31_50']
 SF = ['Skel','Bulge']
-skel = ['23']
+
+skel = ['31_0', '31_50']
+SF = ['Skel']
+pad_num = 50
 
 
 
@@ -126,27 +129,29 @@ for sk in skel:
             im = io.imread(inframe)
             
 
+
             im = rgb2gray(im)
-            im = resize(im, [225,225], anti_aliasing=True)
+            im = np.pad(im, pad_num) 
+            im = resize(im, [225 +pad_num,225 +pad_num], anti_aliasing=True)
 
             #thresh = threshold_otsu(im)
             #binary = im > thresh
             
             
             img = img_as_float(im)
-            filtered_img = gaussian(img, sigma=3)
+            filtered_img = gaussian(img, sigma=2)
             # Feel free to play around with the parameters to see how they impact the result
-            cv = chan_vese(filtered_img, mu=0.25, lambda1=.5, lambda2=1, tol=1e-3, max_iter=200,
+            cv = chan_vese(img, mu=0.25, lambda1=.5, lambda2=1, tol=1e-3, max_iter=200,
                         dt=0.5, init_level_set='checkerboard', extended_output=True)
             
             
             silh = cv[0].astype(int)
-            
+            '''
             if np.mean(silh[0:25, 0:25]) > 0:
                 cv = chan_vese(filtered_img, mu=0.1, lambda1=.5, lambda2=1, tol=1e-3, max_iter=500,
                 dt=.5, init_level_set='checkerboard', extended_output=True)
                 silh = cv[0].astype(int)
-            
+            '''
             
             I = silh
             #print(I.shape)
