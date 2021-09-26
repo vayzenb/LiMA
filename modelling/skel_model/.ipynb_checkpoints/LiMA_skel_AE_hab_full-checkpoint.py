@@ -321,5 +321,5 @@ def extract_acts():
             
 
 #extract_acts()
-#habituate()
+habituate()
 dishabituate()
