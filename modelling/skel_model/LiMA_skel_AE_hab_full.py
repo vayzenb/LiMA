@@ -1,4 +1,4 @@
-curr_dir = '/home/vayzenbe/GitHub_Repos/LiMA'
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA'
 
 import sys
 sys.path.insert(1, f'{curr_dir}')
