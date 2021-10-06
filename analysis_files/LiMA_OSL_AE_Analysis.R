@@ -5,7 +5,7 @@ library(reshape2)
 library(dplyr)
 library(boot)
 
-setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
+#setwd('B:/home/vayzenbe/GitHub_Repos/LiMA')
 setwd('C:/Users/vayze/Desktop/GitHub_Repos/LiMA/')
 
 exp = c('Exp1', 'Exp2')

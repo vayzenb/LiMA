@@ -19,7 +19,7 @@ classifier = c("OCS", "ISOF")
 
 ModelType= c('Infant','skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
 ActualName= c('Infants', 'Skeleton', 'CorNet-Z', 'CorNet-S', 'ResNext-TC', 'ResNet-IN','ResNet-SIN')
-ModelLevels = c('Infants','Skeleton', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-TC')
+ModelLevels = c('Skeleton', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
 
 for (mm in 1:length(ModelType)){
   Exp1.Models[,1][Exp1.Models[,1] == ModelType[mm]] = ActualName[mm]
@@ -65,22 +65,12 @@ for (ee in exp){
 
   
   
-  #Make AE figures
-  df = as.data.frame(eval(as.name(paste(ee, '.Models_AE', sep=""))))
-  infant.data = eval(as.name(paste(ee, '.Models', sep="")))[1,]
-  df = rbind(df, c("Infants", "SF", 0, 0 , 0, infant.data[4:6] ))
-  df = df[df$Model != 'CorNet-Z',] # remove Cornet Z row here
-  df$Model = factor(df$Model, levels = ModelLevels)
-  df$Acc = as.numeric(as.character(df$Acc))
-  df$CI_Low = as.numeric(as.character(df$CI_Low))
-  df$CI_High = as.numeric(as.character(df$CI_High))
-  
   #One-shot learning across SF change (i.e., by skeleton)
-  df.SF = df[df$Condition == 'SF',]
-  df.SF$CI_High = round(df.SF$CI_High,2)-.02
+  df.SF = as.data.frame(read.table(paste("Infant_Data/",ee,"_skel_cat.csv", sep=""),header = TRUE, sep=","))
+  df.SF$model = factor(df.SF$model, levels = c('Infants', ModelLevels))
   
-  ggplot(df.SF, aes(x = Model, y= Acc, fill = Model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
-    geom_linerange(aes(ymin =CI_Low, ymax=CI_High, x = Model), size = sLine) +
+  ggplot(df.SF, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
+    geom_linerange(aes(ymin =CI_low, ymax=CI_high, x = model), size = sLine) +
     scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
     xlab("Models") + ylab("Categorization Score") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                             axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
@@ -94,10 +84,11 @@ for (ee in exp){
   ggsave(filename =  paste('Infant_Data/Figures/', ee, '_SF_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
   
   #one-shot learning across skel changes (i.e., by SF)
-  df.skel = df[df$Condition == 'Skel',]
+  df.skel = as.data.frame(read.table(paste("Infant_Data/",ee,"_sf_cat.csv", sep=""),header = TRUE, sep=","))
+  df.skel$model = factor(df.skel$model, levels = ModelLevels)
   
-  ggplot(df.skel, aes(x = Model, y= Acc, fill = Model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=ModelCols) +
-    geom_linerange(aes(ymin =CI_Low, ymax=CI_High, x = Model), size = sLine) +
+  ggplot(df.skel, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=ModelCols) +
+    geom_linerange(aes(ymin =CI_low, ymax=CI_high, x = model), size = sLine) +
     scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
     xlab("Models") + ylab("Categorization Score") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                             axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
