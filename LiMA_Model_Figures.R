@@ -18,7 +18,7 @@ exp = c('Exp1', 'Exp2')
 classifier = c("OCS", "ISOF")
 
 ModelType= c('Infant','skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
-ActualName= c('Infants', 'Skeleton', 'CorNet-Z', 'CorNet-S', 'ResNext-TC', 'ResNet-IN','ResNet-SIN')
+ActualName= c('Infants', 'Skel-2D','ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
 ModelLevels = c('Skeleton', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
 
 for (mm in 1:length(ModelType)){
@@ -40,14 +40,14 @@ sPlot = 2.5
 
 
 #ModelCols = c('#39a055', '#8ccf8a', '#c81b1d', '#d84e3d', '#d84e3d', '#f09581', '#f9b6a6', '#ffd7cd')
-ModelCols = c('#39a055','#6eb57a', '#de425b', '#e9747e')
+infantCol = "#bababa"
 ModelCols = c('#32759b','#39a055','#FFD700', '#9D02D7', '#de425b')
 for (ee in exp){
   
   Exp.summary = eval(as.name(paste(ee, '.summary', sep="")))
   Exp.summary$Condition = factor(c("First 4","Last 4","Familiar", "Novel"), levels = c("First 4","Last 4","Novel", "Familiar"))
   
-  ggplot(Exp.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = "#32759b", width = .5, size = sLine) + 
+  ggplot(Exp.summary, aes(x = Condition, y = Fixation)) + geom_col(color = "black", fill = infantCol, width = .5, size = sLine) + 
     geom_linerange(ymin = Exp.summary$Fixation - Exp.summary$SE, ymax =Exp.summary$Fixation + Exp.summary$SE, size = sLine) +
     xlab("Trial Type") + ylab("Mean Looking Time (s)") + scale_y_continuous(breaks = seq(0, 12, by = 2), limits=c(0,12), expand = c(0,0)) +
     scale_x_discrete(breaks=c("First 4","Last 4","Novel", "Familiar"), labels=c("First 4","Last 4","Different", "Same")) +
@@ -69,9 +69,11 @@ for (ee in exp){
   df.SF = as.data.frame(read.table(paste("Infant_Data/",ee,"_skel_cat.csv", sep=""),header = TRUE, sep=","))
   df.SF$model = factor(df.SF$model, levels = c('Infants', ModelLevels))
   
-  ggplot(df.SF, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
+  ggplot(df.SF, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c(infantCol, ModelCols)) +
     geom_linerange(aes(ymin =CI_low, ymax=CI_high, x = model), size = sLine) +
-    scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
+    scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + 
+    scale_x_discrete(breaks=c('Infants', ModelLevels), labels=ActualName) + 
+    geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
     xlab("Models") + ylab("Categorization Score") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                             axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
                                                                             axis.title.x = element_blank(), 
@@ -89,7 +91,8 @@ for (ee in exp){
   
   ggplot(df.skel, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=ModelCols) +
     geom_linerange(aes(ymin =CI_low, ymax=CI_high, x = model), size = sLine) +
-    scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
+    scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + 
+    scale_x_discrete(breaks=ModelLevels, labels=ActualName[2:length(ActualName)]) +  geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
     xlab("Models") + ylab("Categorization Score") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
                                                                             axis.text.x = element_text(size=sAx, color = "black",angle =45,hjust = 1),  
                                                                             axis.title.x = element_blank(), 
