@@ -1,0 +1,17 @@
+skel1,sf1,skel2,sf2,skel_cond,sf_cond,dist
+31_0,Skel,31_0,Skel,same,same,259.17946276696136
+31_0,Skel,31_0,Bulge,same,diff,341.3628076801251
+31_0,Skel,31_50,Skel,diff,same,315.6676324363214
+31_0,Skel,31_50,Bulge,diff,diff,355.63287567911834
+31_0,Bulge,31_0,Skel,same,diff,341.3628076801251
+31_0,Bulge,31_0,Bulge,same,same,275.77833047012933
+31_0,Bulge,31_50,Skel,diff,diff,361.96789614874126
+31_0,Bulge,31_50,Bulge,diff,same,329.29665040473503
+31_50,Skel,31_0,Skel,diff,same,315.6676324363214
+31_50,Skel,31_0,Bulge,diff,diff,361.9678961487412
+31_50,Skel,31_50,Skel,same,same,258.14938820977034
+31_50,Skel,31_50,Bulge,same,diff,338.15391256386374
+31_50,Bulge,31_0,Skel,diff,diff,355.63287567911834
+31_50,Bulge,31_0,Bulge,diff,same,329.29665040473503
+31_50,Bulge,31_50,Skel,same,diff,338.15391256386374
+31_50,Bulge,31_50,Bulge,same,same,264.797230026163

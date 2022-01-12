@@ -13,7 +13,7 @@ exp = ['Exp1', 'Exp2']
 skel = [['23','31', '26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
 
-frame_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA/Frames'
+act_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data'
 
 
 def compare_frames(frame_ims1, frame_ims2):
@@ -46,13 +46,14 @@ for ee in enumerate(exp):
     nn1 = 0
     for sk1 in skel[ee[0]]:
         for sf1 in SF:
-            mat = spio.loadmat('gbj_data/Figure_{sk1}_{sf1}_Acts.mat', squeeze_me=True) #load GBJ mat file
+            mat = spio.loadmat(f'{act_dir}/Figure_{sk1}_{sf1}_gbj_acts.mat', squeeze_me=True) #load GBJ mat file
             frame_ims1 = mat['stimActs_GBJ'] #extract acts as np array
 
             nn2 = 0
             for sk2 in skel[ee[0]]:
                 for sf2 in SF:
-                    mat = spio.loadmat('gbj_data/Figure_{sk2}_{sf2}_Acts.mat', squeeze_me=True) #load GBJ mat file
+                    print(sk1,sf1,sk2,sf2)
+                    mat = spio.loadmat(f'{act_dir}/Figure_{sk2}_{sf2}_gbj_acts.mat', squeeze_me=True) #load GBJ mat file
                     frame_ims2 = mat['stimActs_GBJ'] #extract acts as np array
 
                     #compare videos to matched frames (e.g., frame1 to frame1)
@@ -85,14 +86,14 @@ for ee in enumerate(exp):
             nn1 +=1
     
     #pdb.set_trace()
-    np.savetxt(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_mat.csv',dist_mat,delimiter= ',', fmt='%1.3f')
-    np.savetxt(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_mat_pw.csv',dist_mat_pw,delimiter= ',',fmt='%1.3f')
+    np.savetxt(f'{act_dir}/{ee[1]}_gbj_dist_mat.csv',dist_mat,delimiter= ',', fmt='%1.3f')
+    np.savetxt(f'{act_dir}/{ee[1]}_gbj_dist_mat_pw.csv',dist_mat_pw,delimiter= ',',fmt='%1.3f')
     
-    pair_summary.to_csv(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_frames.csv', index=False)
-    pair_summary_pw.to_csv(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_frames_pw.csv', index=False)
+    pair_summary.to_csv(f'{act_dir}/{ee[1]}_gbj_dist_frames.csv', index=False)
+    pair_summary_pw.to_csv(f'{act_dir}/{ee[1]}_gbj_dist_frames_pw.csv', index=False)
 
-    object_summary.to_csv(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_object.csv', index=False)
-    object_summary_pw.to_csv(f'/user_data/vayzenbe/GitHub_Repos/LiMA/modelling/gbj_data/{ee[1]}_gbj_dist_object_pw.csv', index=False)
+    object_summary.to_csv(f'{act_dir}/{ee[1]}_gbj_dist_object.csv', index=False)
+    object_summary_pw.to_csv(f'{act_dir}/{ee[1]}_gbj_dist_object_pw.csv', index=False)
 
 
 

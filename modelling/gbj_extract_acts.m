@@ -42,15 +42,20 @@ for ee = 1:length(exp)
 
 
                     %Extract Gabor Magnitudes
-                    ogGBJ = GWTWgrid_Simple(ogIM);
+                    [acts, phase] = GWTWgrid_Simple(ogIM);
+                    
          
-                    stimActs_GBJ(fn,:) = ogGBJ(:)';
+                    stimActs_GBJ(fn,:) = [acts(:);phase(:)];
+                    allData{fn} = cat(3, acts, phase);
+                    
 
 
 
                 end
                 %Save out activations
-                save(['gbj_data/Figure_', skel{ee}{sk},'_',SF{sf}, '_GBJ_Acts'], 'stimActs_GBJ');
+                save(['gbj_data/Figure_', skel{ee}{sk},'_',SF{sf}, '_gbj_acts'], 'stimActs_GBJ');
+                save(['gbj_data/Figure_', skel{ee}{sk},'_',SF{sf}, '_gbj_ims'], 'allData');
+                
                 
 
                 skel{ee}{sk}
