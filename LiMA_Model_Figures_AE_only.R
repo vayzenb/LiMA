@@ -13,8 +13,9 @@ load('Infant_Data/LiMA_Model_Data.RData')
 load('Infant_Data/LiMA_Model_Data_MultiItem.RData')
 load('Infant_Data/LiMA_AE_Data.RData')
 
-ModelLevels = c('Skeleton', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
+ModelLevels = c('Skeleton', 'Pixel', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
 exp = c('Exp1', 'Exp2')
+
 
 
 sLine = .7
@@ -25,7 +26,7 @@ sPlot = 2.5
 
 #ModelCols = c('#39a055', '#8ccf8a', '#c81b1d', '#d84e3d', '#d84e3d', '#f09581', '#f9b6a6', '#ffd7cd')
 
-ModelCols = c('#32759b','#39a055','#FFD700', '#9D02D7', '#de425b')
+ModelCols = c('#32759b','#39a055','#FFD700','#FFD700', '#9D02D7', '#de425b')
 for (ee in exp){
  
   

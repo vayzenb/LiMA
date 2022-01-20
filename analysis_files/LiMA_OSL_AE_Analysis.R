@@ -16,7 +16,7 @@ exp = c('Exp1', 'Exp2')
 #skel is whether igeneralied  across a skel change (one-shot by )
 cond = c('Ident', 'SF', 'Skel') 
 #ModelType= c('Skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
-ModelType= c('skel','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
+ModelType= c('skel','pixel1','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
 
 skel = list(list('23', '31', '26'), list('31_0', '31_50'))
 SF = list('Skel', 'Bulge')

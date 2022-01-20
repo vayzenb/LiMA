@@ -17,9 +17,9 @@ exp = c('Exp1', 'Exp2')
 
 classifier = c("OCS", "ISOF")
 
-ModelType= c('Infant','skel', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
-ActualName= c('Infants', 'Skel-2D','ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
-ModelLevels = c('Skeleton', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
+ModelType= c('Infant','skel','pixel1', 'CorNet_Z', 'CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN")
+ActualName= c('Infants', 'Skel-2D', 'Pixel','ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
+ModelLevels = c('Skeleton', 'Pixel', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
 
 for (mm in 1:length(ModelType)){
   Exp1.Models[,1][Exp1.Models[,1] == ModelType[mm]] = ActualName[mm]
@@ -41,7 +41,7 @@ sPlot = 2.5
 
 #ModelCols = c('#39a055', '#8ccf8a', '#c81b1d', '#d84e3d', '#d84e3d', '#f09581', '#f9b6a6', '#ffd7cd')
 infantCol = "#bababa"
-ModelCols = c('#32759b','#39a055','#FFD700', '#9D02D7', '#de425b')
+ModelCols = c('#32759b','#39a055','#FFD700','#FFD700', '#9D02D7', '#de425b')
 for (ee in exp){
   
   Exp.summary = eval(as.name(paste(ee, '.summary', sep="")))
@@ -60,7 +60,7 @@ for (ee in exp){
                             axis.ticks.length = unit(.09, "cm"))
   
   
-  ggsave(filename =  paste('Infant_Data/Figures/LiMA_', ee, '_infant.png', sep = ""), plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
+ # ggsave(filename =  paste('Infant_Data/Figures/LiMA_', ee, '_infant.png', sep = ""), plot = last_plot(), dpi = 300,width =2.2, height = 2.75)
   
 
   
@@ -83,7 +83,7 @@ for (ee in exp){
                                                                             axis.ticks.length = unit(.09, "cm"),
                                                                             legend.position ="none")
   
-  ggsave(filename =  paste('Infant_Data/Figures/', ee, '_SF_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
+#  ggsave(filename =  paste('Infant_Data/Figures/', ee, '_SF_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
   
   #one-shot learning across skel changes (i.e., by SF)
   df.skel = as.data.frame(read.table(paste("Infant_Data/",ee,"_sf_cat.csv", sep=""),header = TRUE, sep=","))
@@ -102,7 +102,7 @@ for (ee in exp){
                                                                             axis.ticks.length = unit(.09, "cm"),
                                                                             legend.position ="none")
   
-  ggsave(filename =  paste('Infant_Data/Figures/', ee, '_Skel_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
+  #ggsave(filename =  paste('Infant_Data/Figures/', ee, '_Skel_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
   
   # for (cl in classifier){
   #   #Preprocess data to have factors and conditions etc.

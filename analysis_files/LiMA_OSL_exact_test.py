@@ -12,8 +12,8 @@ from scipy import stats
 
 curr_dir = 'C:/Users/vayze/Desktop/GitHub_Repos/LiMA/'
 
-model_type= ['skel','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN"]
-actual_name = ['Skeleton', 'CorNet-S', 'ResNext-SAY', 'ResNet-IN','ResNet-SIN']
+model_type= ['skel','pixel1','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN"]
+actual_name = ['Skeleton', 'Pixel','CorNet-S', 'ResNext-SAY', 'ResNet-IN','ResNet-SIN']
 
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
