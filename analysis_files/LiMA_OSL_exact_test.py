@@ -11,9 +11,10 @@ import itertools
 from scipy import stats
 
 curr_dir = 'C:/Users/vayze/Desktop/GitHub_Repos/LiMA/'
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA'
 
-model_type= ['skel','pixel1','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN"]
-actual_name = ['Skeleton', 'Pixel','CorNet-S', 'ResNext-SAY', 'ResNet-IN','ResNet-SIN']
+model_type= ['skel','pixel1','CorNet_S',"SayCam", "ResNet_IN", "ResNet_SN", "flownet_flo"]
+actual_name = ['Skeleton', 'Pixel','CorNet-S', 'ResNext-SAY', 'ResNet-IN','ResNet-SIN', 'FlowNet']
 
 skel = [['23', '31', '26'], ['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
@@ -32,6 +33,7 @@ exp = ['Exp1', 'Exp2']
 def extract_model_data(exp, comps):
     object_summary = pd.DataFrame(columns = ['exp','model','skel', 'sf', 'score'])
     for mm in model_type:
+        print(mm)
         curr_model = pd.DataFrame(columns = model_cols)
         for sk in skel[exn]:
             for sf in SF:
@@ -41,11 +43,17 @@ def extract_model_data(exp, comps):
                 
                 #subtract habituation
                 temp_df['error'] = temp_df['error'] - temp_df['hab_end']
-                temp_df['error'][temp_df['error'] <0] = 0
+                temp_df['error'][temp_df['error'] <=0] = 0
                 
                 diff_score =temp_df['error'][(temp_df['skel_cat'] == 'diff') & (temp_df['sf_cat'] == 'diff')].mean()
                 same_score = temp_df['error'][(temp_df['skel_cat'] == comps[0]) & (temp_df['sf_cat'] == comps[1])].mean()
-                cat_score = diff_score/ (diff_score + same_score)
+
+                #
+                try:
+                    cat_score = diff_score/ (diff_score + same_score)
+                except:
+                    cat_score = .5
+                    
                 temp_summary = pd.Series([ee, mm, sk, sf, cat_score], index = object_summary.columns)
                 
                 object_summary = object_summary.append(temp_summary, ignore_index = True )
