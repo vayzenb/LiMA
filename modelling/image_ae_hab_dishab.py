@@ -24,12 +24,13 @@ import deepdish as dd
 '''
 set up steps
 '''
-stim_dir = f'{curr_dir}/Frames'
+
 exp = ['Exp1', 'Exp2']
 
 skel = [['23','31','26'],['31_0', '31_50']]
 SF = ['Skel', 'Bulge']
-modelType = ['pixel1']
+modelType = ['pixel', 'flownet']
+modelType = ['flownet']
 #modelType = ['AlexNet_SN', 'ResNet_SN', 'AlexNet_IN', 'ResNet_IN', 'CorNet_Z', 'CorNet_S','SayCam']
 
 batch_num = 10
@@ -77,15 +78,18 @@ def save_model(model, epoch, optimizer, loss, file_path):
 
 
 def load_model(modelType_):
+    global stim_dir
     #select model to run
-    if modelType_ == 'pixel1':
+    if modelType_ == 'pixel':
         #model = nn.Sequential(nn.Conv2d(3,1024,kernel_size=3, stride=2), nn.ReLU(), nn.MaxPool2d(kernel_size=3, stride=2, padding=1), nn.AdaptiveAvgPool2d(1))
         act_num = 1024
+        stim_dir = f'{curr_dir}/Frames'
         
 
-    elif modelType_ == 'pixel2':
+    elif modelType_ == 'flownet':
         #model = nn.Sequential(nn.Conv2d(3,4096,kernel_size=3, stride=2), nn.ReLU(), nn.MaxPool2d(kernel_size=3, stride=2, padding=1), nn.AdaptiveAvgPool2d(1))
-        act_num = 4096
+        act_num = 1024
+        stim_dir = f'{curr_dir}/modelling/flow_data'
 
     elif modelType_ == 'gbj':
         #use the gabor wavelets as they are (in a tranposed vector form)
@@ -93,6 +97,7 @@ def load_model(modelType_):
         #the loss is still calcualted from the image though (but maybe grayscale it)
 
         act_num = 8000
+    
     
     decoder = define_decoder(act_num)
     return decoder, act_num
@@ -111,16 +116,18 @@ def habituate(exp, model_type):
     hn = 0
     for sk in range(0,len(skel[exp[0]])):
         for sf in SF:
+            
             torch.cuda.empty_cache() #clear GPU memory
+            #Reset decoder for every object (i.e., make it like a fresh hab session)
+            #Create decoder
+            decoder, act_num = load_model(model_type)
             hab_dataset = LoadFrames(f'{stim_dir}/Figure_{skel[exp[0]][sk]}_{sf}', transform=transform)
             trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=batch_num, shuffle=True, num_workers = 2, pin_memory=True)
 
             early_hab = 0.0
             late_hab = []
 
-            #Reset decoder for every object (i.e., make it like a fresh hab session)
-            #Create decoder
-            decoder, act_num = load_model(model_type)
+            
             
             decoder.train()
 
@@ -290,6 +297,6 @@ for ee in enumerate(exp):
     hab_data = np.empty(((len(skel[ee[0]]) * len(SF) *len(modelType)),11), dtype = object)
     hn = 0
     for mm in modelType:
-        #habituate(ee,mm)
+        habituate(ee,mm)
         dishabituate(ee,mm)
  

@@ -21,6 +21,7 @@ import pdb
 from itertools import chain
 import deepdish as dd
 from LoadImagePairs import LoadImagePairs
+from utils import flow_utils
 
 '''
 set up steps
@@ -91,13 +92,34 @@ def load_model(modelType_):
     
     model = model.cuda()
     model.eval()
-    decoder = define_decoder(modelType_, channels)
     
-    return model, decoder, channels
+    
+    return model, channels
 
-'''
-habituate
-'''
+def create_flows(exp, model_type):
+
+    model, _ = load_model(model_type)
+    model.eval()
+    out_dir = f'{curr_dir}/modelling/flow_data'
+    with torch.no_grad(): 
+        for sk in range(0,len(skel[exp[0]])):
+            for sf in SF:
+                print(exp,skel[exp[0]][sk], sf)
+                os.makedirs(f'{out_dir}/Figure_{skel[exp[0]][sk]}_{sf}', exist_ok=True)
+                
+                hab_dataset = LoadImagePairs(f'{stim_dir}/Figure_{skel[exp[0]][sk]}_{sf}')
+                trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=1, shuffle=False, num_workers = 2, pin_memory=True)
+                fn = 1
+                for data in trainloader:
+                    frames = data[0][0].cuda()
+                    #print(data)
+                    flo,_,_, _ = model(frames)
+                    
+                    _pflow = flo[0,...].data.cpu().numpy().transpose(1, 2, 0)
+                    flow_utils.visulize_flow_file(_pflow,f'{out_dir}/Figure_{skel[exp[0]][sk]}_{sf}/Figure_{skel[exp[0]][sk]}_{sf}_{fn}.jpg',True)
+                    fn += 1
+                
+
 
 def habituate(exp, model_type):
     """
@@ -118,7 +140,8 @@ def habituate(exp, model_type):
 
             #Reset decoder for every object (i.e., make it like a fresh hab session)
             #Create decoder
-            model, decoder, act_num = load_model(model_type)
+            model, act_num = load_model(model_type)
+            decoder = define_decoder(model_type, act_num)
             decoder.train()
             
 
@@ -308,18 +331,21 @@ def dishabituate(exp, model_type):
 
     print(df.groupby(['skel_cat', 'sf_cat'])['loss'].mean())
 
- 
+'''
 ee = [1,'Exp2']
 for mm in modelType:
         #habituate(ee,mm)
         dishabituate(ee,mm)
-#habituate(ee,mm)
 '''
+
+#habituate(ee,mm)
+
 for ee in enumerate(exp):
 
     hab_data = np.empty(((len(skel[ee[0]]) * len(SF) *len(modelType)),11), dtype = object)
     hn = 0
     for mm in modelType:
         #habituate(ee,mm)
-        dishabituate(ee,mm)
-'''
+        #dishabituate(ee,mm)
+        create_flows(ee, mm)
+
