@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct  4 10:57:17 2021
-
 @author: vayze
 """
 import pandas as pd
@@ -64,18 +63,15 @@ def extract_model_data(exp, comps):
 def calc_bootstrap_ci(df, exp, model):
     """
     Calculate bootstrap confidene intervals for all models
-
     Parameters
     ----------
     exp : which experiment to load
         DESCRIPTION.
     object_data : a dataframe with object data
         DESCRIPTION.
-
     Returns
     -------
     CIs for models
-
     """
     
     
@@ -184,7 +180,6 @@ for exn, ee in enumerate(exp):
     
     
     '''
-
     temp_df = infant_data[(infant_data['skel1'].astype(str) == sk) & (infant_data['sf1'] == sf)]
     
     diff_score = temp_df['Novel'].mean()  - temp_df['HabEnd'].mean()
@@ -215,9 +210,3 @@ for exn, ee in enumerate(exp):
         
 
         #pdb.set_trace()
-        
-                
-                
-                
-                
-        
