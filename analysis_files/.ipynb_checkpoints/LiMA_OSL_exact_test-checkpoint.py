@@ -104,11 +104,10 @@ def calc_bootstrap_ci(df, exp, model):
             
     
     
-    #ci_low = np.percentile(boot_vals, alpha/2*100)
-    #ci_high= np.percentile(boot_vals, 100-alpha/2*100)
+    ci_low = np.percentile(boot_vals, alpha/2*100)
+    ci_high= np.percentile(boot_vals, 100-alpha/2*100)
 
-    ci_low = np.percentile(boot_vals, alpha*100)
-    ci_high= np.percentile(boot_vals, 100-alpha*100)
+
     #model_summary['CI_low'] = pd.Series(ci_low)
     #model_summary['CI_high'] = pd.Series(ci_high)
     

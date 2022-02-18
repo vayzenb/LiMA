@@ -13,7 +13,7 @@ load('Infant_Data/LiMA_Model_Data.RData')
 load('Infant_Data/LiMA_Model_Data_MultiItem.RData')
 load('Infant_Data/LiMA_AE_Data.RData')
 
-ModelLevels = c('Skeleton', 'Pixel', 'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY')
+ModelLevels = c('Skeleton',  'ResNet-IN','ResNet-SIN', 'CorNet-S', 'ResNext-SAY','Pixel', 'FlowNet')
 exp = c('Exp1', 'Exp2')
 
 
@@ -26,7 +26,8 @@ sPlot = 2.5
 
 #ModelCols = c('#39a055', '#8ccf8a', '#c81b1d', '#d84e3d', '#d84e3d', '#f09581', '#f9b6a6', '#ffd7cd')
 
-ModelCols = c('#32759b','#39a055','#FFD700','#FFD700', '#9D02D7', '#de425b')
+ModelCols = c('#32759b','#39a055','#FFD700','#db5900', '#a65628', '#9D02D7', '#de425b')
+ModelCols = c('#32759b','#46995d','#f0c630','#db5900', '#a65628', '#9D02D7', '#de425b')
 for (ee in exp){
  
   
@@ -34,7 +35,7 @@ for (ee in exp){
   df.SF = as.data.frame(read.table(paste("Infant_Data/",ee,"_skel_cat.csv", sep=""),header = TRUE, sep=","))
   df.SF$model = factor(df.SF$model, levels = c('Infants', ModelLevels))
   
-  ggplot(df.SF, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#32759b', ModelCols)) +
+  ggplot(df.SF, aes(x = model, y= score, fill = model)) + geom_col(color = "black", width = .5, size = sLine) + scale_fill_manual(values=c('#BABABA', ModelCols)) +
     geom_linerange(aes(ymin =CI_low, ymax=CI_high, x = model), size = sLine) +
     scale_y_continuous(breaks = seq(0, 1, by = .25), limits=c(0,1), expand = c(0,0)) + geom_hline(yintercept= .5, linetype="dashed", size = sLine) +
     xlab("Models") + ylab("Categorization Score") + theme_classic() + theme(axis.text.y = element_text(size=sAx, color = "black"), 
@@ -46,7 +47,7 @@ for (ee in exp){
                                                                             axis.ticks.length = unit(.09, "cm"),
                                                                             legend.position ="none")
   
-  ggsave(filename =  paste('Infant_Data/Figures/', ee, '_SF_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =2.5, height = 3)
+  ggsave(filename =  paste('Infant_Data/Figures/', ee, '_SF_AE.png', sep = ""), plot = last_plot(), dpi = 300,width =3, height = 3)
   
   #one-shot learning across skel changes (i.e., by SF)
   df.skel = as.data.frame(read.table(paste("Infant_Data/",ee,"_sf_cat.csv", sep=""),header = TRUE, sep=","))
