@@ -57,7 +57,23 @@ criterion = nn.MSELoss()
 epochs = 100
 hab_min = 4 #minimum number of habituation trials
 
+def save_recon(out_, model, stim):
+    
+    fig,ax = plt.subplots(1)
+    ax.set_aspect('equal')
 
+    # Show the image
+    #ax.imshow(im)
+
+    out_ = out_.squeeze(0)
+    out_ = inv_normalize(out_)
+    out_ = out_.cpu().detach()
+    ax.imshow(out_.permute(1, 2, 0))
+    plt.axis('off')
+    #print(f'Results/AE/recon/{model}_{fig_fig_}.png')
+    plt.savefig(f'{curr_dir}/Results/AE/recon/{model}_{stim}.png', bbox_inches='tight', pad_inches = 0, dpi=150)
+    plt.close()
+    
 
 def define_decoder(act_num):
     decoder = nn.Sequential(nn.Conv2d(3,act_num,kernel_size=3, stride=2), nn.ReLU(), nn.MaxPool2d(kernel_size=3, stride=2, padding=1), nn.AdaptiveAvgPool2d(1),nn.ReLU(), nn.ConvTranspose2d(act_num, 3, 224))
