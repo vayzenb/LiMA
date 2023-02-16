@@ -6,7 +6,10 @@
 # Author: VAYZENB
 
 # %%
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA'
+
 import sys
+sys.path.insert(1, f'{curr_dir}')
 import os, argparse
 from collections import OrderedDict
 import torch
@@ -21,7 +24,7 @@ from LoadFrames import LoadFrames
 from statistics import mean
 from PIL import Image
 import matplotlib.pyplot as plt
-%matplotlib inline
+
 
 # %%
 exp = ['Exp1', 'Exp2']
@@ -43,9 +46,40 @@ transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                              std=[0.229, 0.224, 0.225])])
+
+#inverse normalization for reconstruction
+inv_normalize = transforms.Normalize(
+   mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225],std=[1/0.229, 1/0.224, 1/0.225])
 # specify loss function
 criterion = nn.MSELoss()
-#criterion.cuda()
+
+def define_decoder(in_feat):
+    '''
+    Create a single layer decoder comprised of a ReLU activation and a 2D transposed Convolutional layer
+    in_feat: number of features from the output of the encoder
+    '''
+
+    decoder = nn.Sequential(nn.ReLU()) #initialize decoder with ReLU activation
+    convT2d = nn.ConvTranspose2d(in_feat, 3, 224) #create 2D transposed convolutional layer
+
+    #initialize weights  in Tconv2d layer
+    torch.nn.init.kaiming_uniform_(convT2d.weight, a=0, mode='fan_in', nonlinearity='relu') 
+    decoder.add_module('1', convT2d) #add Tconv2d layer to decoder
+    decoder = decoder.cuda()
+    
+    return decoder
+
+def save_model(model, epoch, optimizer, loss, file_path):
+    '''Save model weights'''
+
+    print('Saving model ...')
+    #torch.save(model.state_dict(), f'{weights_dir}/cornet_classify_{cond}_{epoch}.pt')
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss,
+        }, file_path)
 
 epochs = 100
 
@@ -60,6 +94,12 @@ def _store_feats(layer, inp, output):
 
 # %%
 def load_model(modelType_):
+    '''
+    Select model to run
+
+    For each model, the last layer is removed and replaced with a version that outputs the penultimate layer 
+    '''
+
     #select model to run
     if modelType_ == 'AlexNet_IN':
         model = torchvision.models.alexnet(pretrained=True)
@@ -104,13 +144,7 @@ def load_model(modelType_):
         model = nn.Sequential(*list(model.children())[0][:-1])
         model.add_module('4', decode_layer)
         
-        
-        #try:
-        #    m = model.module
-        #except:
-        #    m = model
-        #model_layer = getattr(getattr(m, 'decoder'), layer)
-        #model_layer.register_forward_hook(_store_feats)
+
 
     elif modelType_ == 'CorNet_S':
         model = getattr(cornet, 'cornet_s')
@@ -123,13 +157,7 @@ def load_model(modelType_):
         decode_layer = nn.Sequential(*list(model.children())[0][4][:-3])
         model = nn.Sequential(*list(model.children())[0][:-1])
         model.add_module('4', decode_layer)
-        #try:
-        #    m = model.module
-        #except:
-        #    m = model
-        
-        #model_layer = getattr(getattr(m, 'decoder'), layer)
-        #model_layer.register_forward_hook(_store_feats)
+
 
     elif modelType_ == 'SayCam':
         model = torchvision.models.resnext50_32x4d(pretrained=False)
@@ -146,6 +174,8 @@ def load_model(modelType_):
 
 # %%
 def save_recon(out_,sk_,sf_, model, stim):
+    '''Uses the decoder output to reconstruct the input object'''
+
     
     fig,ax = plt.subplots(1)
     ax.set_aspect('equal')
@@ -163,22 +193,18 @@ def save_recon(out_,sk_,sf_, model, stim):
     
     
 def habituate():
+    '''
+    'habituate' a CNN by feeding it a series of images of the same object and training a decoder to reconstruct the input
+    '''
+
     for ee in range(0,len(exp)):
-        hab_data = np.empty(((len(skel[ee]) * len(SF) *len(modelType)),11), dtype = object)
+        #create empty matrix to store hab/dishab summary data 
+        hab_data = np.empty(((len(skel[ee]) * len(SF) *len(modelType)),11), dtype = object) 
         hn = 0
-        for mm in range(0, len(modelType)):
+        for mm in range(0, len(modelType)): #loop through models
             
+            #create encoder from model backend
             encoder, in_feat = load_model(modelType[mm])
-            #print(modelType[mm], in_feat)
-            
-            #Register forward hook to extract data from avgpool layer
-            #if modelType[mm] == 'CorNet_Z' or modelType[mm] == 'CorNet_S':
-            #    try:
-            #        m = encoder.module
-            #    except:
-            #        m = encoder
-            #    model_layer = getattr(getattr(m, 'decoder'), "avgpool")
-            #    model_layer.register_forward_hook(_store_feats)
 
             encoder = encoder.cuda()
             encoder.eval()
@@ -186,6 +212,7 @@ def habituate():
             for sk in range(0,len(skel[ee])):
                 for sf in SF:
                     torch.cuda.empty_cache() #clear GPU memory
+                    #load frames of the habituation objects
                     hab_dataset = LoadFrames(f'Frames/Figure_{skel[ee][sk]}_{sf}', transform=transform)
                     trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=batch_num, shuffle=True, num_workers = 2, pin_memory=True)
 
@@ -194,13 +221,7 @@ def habituate():
                     
                     #Reset decoder for every object (i.e., make it like a fresh hab session)
                     #Create decoder
-                    decoder = nn.Sequential(nn.ReLU())
-                    convT2d = nn.ConvTranspose2d(in_feat, 3, 224)
-                    #this is  a better initialization ReLu/MSE Loss
-                    torch.nn.init.kaiming_uniform_(convT2d.weight, a=0, mode='fan_in', nonlinearity='relu') 
-                    decoder.add_module('1', convT2d)
-                    decoder = decoder.cuda()
-                    decoder.eval()
+                    decoder = define_decoder(in_feat)
                     decoder.train()
                     
                     #set up optimzer
@@ -213,22 +234,13 @@ def habituate():
                         for frames in trainloader:
                             frames = frames.cuda()
                             
-                            #if modelType[mm] == 'CorNet_Z' or modelType[mm] == 'CorNet_S':
-                            #    _model_feats = []
-                            #    encoder(frames)
-                            #    encode_out = _model_feats[0]
-                            #    #print(encode_out.shape)
-                            #elif modelType[mm] == 'AlexNet_SN' or modelType[mm] == 'AlexNet_IN':
-                            #    encode_out = encoder(frames) #Get encoder features
-                            #    encode_out = encode_out[:,:, None, None]
-                            #else:
                             encode_out = encoder(frames) #Get encoder features
                             
                             optimizer.zero_grad() #zero out gradients from previous epoch
                             
                             decode_out = decoder(encode_out) #Run features through decoder
                                                     
-                            loss = criterion(decode_out, frames) #Calculate loss
+                            loss = criterion(decode_out, frames) #Calculate loss by comparing decoder output to original image
 
                             # backward pass: compute gradient of the loss with respect to model parameters
                             loss.backward()
@@ -254,6 +266,7 @@ def habituate():
                             if hab_end < (hab_start/2) and ep >= int(hab_min *2): #test if habituated
                                 break
                     
+                    #add condition info to matrix
                     hab_data[hn,0] =  modelType[mm]
                     hab_data[hn,1] =  skel[ee][sk]
                     hab_data[hn,2] =  sf
@@ -261,22 +274,27 @@ def habituate():
                     hab_data[hn,4] =  hab_start
                     hab_data[hn,5] =  hab_end
                     
-                    print('Saving model', modelType[mm], f'Figure_{skel[ee][sk]}_{sf}', ep, hab_start, hab_end)                
-                    torch.save(decoder.state_dict(), f'Weights/decoder/{exp[ee]}_{modelType[mm]}_Figure_{skel[ee][sk]}_{sf}.pt')
+                    print('Saving model', modelType[mm], f'Figure_{skel[ee][sk]}_{sf}', ep, hab_start, hab_end)
+                    save_model(decoder, ep, optimizer, loss, f'{curr_dir}/Weights/decoder/{exp[ee]}_{modelType[mm]}_Figure_{skel[ee][sk]}_{sf}.pt')                
+                    
                     np.save(f'Weights/decoder/{exp[ee]}_Summary.npy', hab_data)
                     hn = hn + 1
-                    del decoder
-        del encoder
+
+                    del decoder #delete decoder to free up memory
+        del encoder #delete encoder to free up memory
     
 def dishabituate():
+    '''
+    'dishabituate' a CNN by measuring its  reconstruction error to an object it has never seen before
+    '''
         
-    for ee in range(0,len(exp)):
-        hab_data = np.load(f'Weights/decoder/{exp[ee]}_Summary.npy',allow_pickle=True)
+    for ee in range(0,len(exp)): #loop through experiments
+        hab_data = np.load(f'Weights/decoder/{exp[ee]}_Summary.npy',allow_pickle=True) #load dataframe created during habituation
         
-        for mm in range(0, len(hab_data)):
+        for mm in range(0, len(hab_data)): #loop through models
         #for mm in range(0,1):
             
-            encoder, in_feat = load_model(hab_data[mm,0]) #load encoder
+            encoder, in_feat = load_model(hab_data[mm,0]) #load encoder from model backend
             #print(hab_data[mm,0])
 
             encoder = encoder.cuda()
@@ -288,11 +306,13 @@ def dishabituate():
             for sk in range(0,len(skel[ee])):
                 for sf in SF:
                     torch.cuda.empty_cache() #clear GPU memory
+
                     #load stim for dishab object
                     hab_dataset = LoadFrames(f'Frames/Figure_{skel[ee][sk]}_{sf}', transform=transform)
                     trainloader = torch.utils.data.DataLoader(hab_dataset, batch_size=batch_num, shuffle=True, num_workers = 2, pin_memory=True)
                     #print(f'Figure_{skel[ee][sk]}_{sf}')
                     
+                    #set category of dishab object
                     if skel[ee][sk] == hab_data[mm,1]:
                         skel_cat = "same"
                     else:
@@ -303,25 +323,17 @@ def dishabituate():
                     else:
                         sf_cat = "diff"
                     
+                    #Reset decoder for every object (i.e., make it like a fresh hab session)
                     #Create decoder
-                    #it gets reset for every object
-                    decoder = nn.Sequential(nn.ReLU())
-                    convT2d = nn.ConvTranspose2d(in_feat, 3, 224)
-                    #this is  a better initialization ReLu/MSE Loss
-                    torch.nn.init.kaiming_uniform_(convT2d.weight, a=0, mode='fan_in', nonlinearity='relu') 
-                    decoder.add_module('1', convT2d)
-                    decoder = decoder.cuda()
-
+                    decoder = define_decoder()
+                    
                     #Load checkpoint from fully trained decoder
-                    checkpoint = torch.load(f'Weights/decoder/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}.pt')
-                    #print(f'Weights/decoder/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}.pt')
-                    decoder.load_state_dict(checkpoint)
+                    checkpoint = torch.load(f'{curr_dir}/Weights/decoder/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}.pt')
+                    
+                    decoder.load_state_dict(checkpoint['model_state_dict'])
                     decoder.eval()
-                    decoder.train() #put in "train mode' because the baby "kinda learns over dishab"
-    
-                    #set up optimzer
-                    #optimizer = torch.optim.SGD(decoder.parameters(), lr=0.01, momentum=0.9)
-                    #optimizer = torch.optim.Adam(decoder.parameters(), lr=0.01)
+                    
+
                     total_loss = []
                     for ep in range(0,epochs):
                         train_loss = 0.0 
@@ -330,29 +342,24 @@ def dishabituate():
                             frames = frames.cuda()
                             
                             encode_out = encoder(frames) #Get encoder features
-                            
-                            #optimizer.zero_grad() #zero out gradients from previous epoch
-                            
+                                                       
                             decode_out = decoder(encode_out) #Run features through decoder
                                                     
-                            loss = criterion(decode_out, frames) #Calculate loss
+                            loss = criterion(decode_out, frames) #Calculate loss by comparing decoder output to original image
                             train_loss += (loss.item()*frames.size(0))
                             n = n +1
+              
 
-                            # backward pass: compute gradient of the loss with respect to model parameters
-                            #loss.backward()
-                            # perform a single optimization step (parameter update)
-                            #optimizer.step()                        
-
-                            #print(train_loss, loss.item()*frames.size(0), n)
                         total_loss = train_loss/n
 
                         #print(ep, total_loss)
                         
                                 
                     if skel_cat == 'same' and sf_cat == 'same':
+                        '''Save reconstruction of habituation object'''
                         save_recon(decode_out, skel_cat, sf_cat, hab_data[mm,0],f'Figure_{hab_data[mm,1]}_{hab_data[mm,2]}')
-                        
+
+                    #add dishabituation data to summary matrix 
                     test_data[hn,0:hab_data.shape[1]] =  hab_data[mm]
                     test_data[hn,6] =  skel[ee][sk]
                     test_data[hn,7] =  sf
@@ -360,20 +367,12 @@ def dishabituate():
                     test_data[hn,9] =  sf_cat
                     test_data[hn,10] = total_loss
                     
-                    
-                    #test_data[hn,11] =  []
-                    #test_data[hn,11:test_data.shape[1]] =  total_loss
-                    #hab_data[hn,9] =  hab_end
-                    
+
                     print(test_data[hn])
                     hn = hn +1
-            #print('Saving model', modelType[mm], f'Figure_{skel[ee][sk]}_{sf}', ep, hab_start, hab_end)                
-            #torch.save(decoder.state_dict(), f'Weights/decoder/{exp[ee]}_{modelType[mm]}_Figure_{skel[ee][sk]}_{sf}.pt')
-            np.savetxt(f'Results/AE/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}_Result.csv', test_data, delimiter=',', fmt= '%s')
-            #hn = hn + 1
             
-            #del decoder
-            #del encoder
+            #save summary info for each dishabituation object
+            np.savetxt(f'Results/AE/{exp[ee]}_{hab_data[mm,0]}_Figure_{hab_data[mm,1]}_{hab_data[mm,2]}_Result.csv', test_data, delimiter=',', fmt= '%s')
 
 habituate()
 dishabituate()
