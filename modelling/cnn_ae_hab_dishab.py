@@ -6,23 +6,22 @@
 # Author: VAYZENB
 
 # %%
+
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/LiMA'
 
 import sys
-sys.path.insert(1, f'{curr_dir}')
-import os, argparse
-from collections import OrderedDict
+sys.path.insert(1, f'{curr_dir}') #add working directory to path
+
 import torch
 import torch.nn as nn
 import torchvision
 from torchvision import transforms
 import cornet
-from torchvision import datasets
-import torchvision.models as models
+
 import numpy as np
-from LoadFrames import LoadFrames
+from LoadFrames import LoadFrames #custom data loader for loading frames of videos
 from statistics import mean
-from PIL import Image
+
 import matplotlib.pyplot as plt
 
 
@@ -82,14 +81,6 @@ def save_model(model, epoch, optimizer, loss, file_path):
         }, file_path)
 
 epochs = 100
-
-#Gets feats for CorNet models
-def _store_feats(layer, inp, output):
-    """An ugly but effective way of accessing intermediate model features
-    """   
-    output = output
-    _model_feats.append(output)
-
 
 
 # %%

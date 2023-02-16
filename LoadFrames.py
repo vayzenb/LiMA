@@ -1,8 +1,10 @@
+'''
+This class is used to load the frames from the video and return the frames as a tensor.
+'''
+
+
 import os
-import torch
-from torch.utils.data import Dataset, DataLoader
-import torchvision.transforms as transforms
-from torchvision import datasets
+from torch.utils.data import Dataset
 import natsort
 from PIL import Image
 
@@ -27,11 +29,3 @@ class LoadFrames(Dataset):
         return tensor_image
 
 
-""" transform_ = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                             std=[0.229, 0.224, 0.225])])
-hab_data = LoadFrames('Frames/Figure_23_Bulge',transform_)
-trainloader = torch.utils.data.DataLoader(hab_data, batch_size=len(hab_data), shuffle=False, num_workers = 4, pin_memory=True)
-#dataiter = iter(trainloader)
-print(hab_data) """
